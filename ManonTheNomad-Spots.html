@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>@manonthenomad — Free Camper Spots Europe</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream: #FBF7F0;
+    --sage: #8FA98A;
+    --sage-deep: #5C7458;
+    --dustyrose: #E3B4AC;
+    --clay: #C98B6E;
+    --ink: #3A3630;
+    --ink-soft: #7A756B;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;}
+  body{
+    font-family:'Inter', sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+  }
+
+  header{
+    position:relative;
+    padding:20px 24px 16px;
+    background: var(--cream);
+    border-bottom: 1px solid #ECE4D6;
+    flex:0 0 auto;
+  }
+  .brand{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .brand h1{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-optical-sizing:auto;
+    font-size:clamp(22px, 3.4vw, 30px);
+    margin:0;
+    color:var(--sage-deep);
+    letter-spacing:-0.3px;
+  }
+  .brand .handle{
+    font-family:'Inter', sans-serif;
+    color:var(--sage-deep);
+    background:#fff;
+    border:1px solid var(--sage);
+    font-size:13px;
+    font-weight:500;
+    padding:4px 12px;
+    border-radius:20px;
+  }
+  header p.sub{
+    margin:6px 0 0;
+    font-size:14px;
+    max-width:560px;
+    color:var(--ink-soft);
+    line-height:1.4;
+  }
+
+  #map{
+    flex:1 1 auto;
+    width:100%;
+    min-height:0;
+  }
+
+  .legend{
+    display:flex;
+    gap:20px;
+    padding:10px 24px;
+    font-size:13px;
+    background:#fff;
+    flex-wrap:wrap;
+    border-bottom:1px solid #ECE4D6;
+    color:var(--sage-deep);
+    font-weight:500;
+    flex:0 0 auto;
+  }
+  .legend span{display:flex;align-items:center;gap:7px;}
+
+  /* --- Popup card --- */
+  .leaflet-popup-content-wrapper{
+    background:#fff;
+    color:var(--ink);
+    border-radius:16px;
+    box-shadow:0 14px 32px rgba(58,54,48,0.14);
+    border: 1px solid #ECE4D6;
+  }
+  .leaflet-popup-tip{background:#fff;}
+  .leaflet-popup-content{margin:0; width:440px !important;}
+  .leaflet-popup-close-button{color:var(--ink-soft) !important; font-size:20px !important;}
+
+  .card{
+    position:relative;
+    padding:16px;
+    display:flex;
+    gap:14px;
+  }
+  .card .media{
+    flex:0 0 42%;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .card video{
+    width:100%;
+    aspect-ratio:16/9;
+    height:auto;
+    border-radius:10px;
+    border:1px solid #ECE4D6;
+    display:block;
+    background:#000;
+    object-fit:cover;
+  }
+  .card .content{
+    flex:1 1 auto;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+  }
+  .card .tagsrow{
+    font-size:15px;
+    letter-spacing:2px;
+    margin-bottom:2px;
+  }
+  .card h3{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    margin:0 0 4px; font-size:16.5px; color:var(--sage-deep);
+    line-height:1.2;
+  }
+  .card p{margin:0 0 10px; font-size:12.5px; line-height:1.5; color:var(--ink-soft);}
+  .card a.maps-link{
+    display:inline-flex; align-items:center; gap:6px; font-family:'Inter';
+    font-weight:600; font-size:12.5px; color:#fff;
+    background: var(--sage-deep);
+    padding:7px 12px; border-radius:20px; text-decoration:none;
+    margin-bottom:6px;
+    justify-content:center;
+  }
+  .card a.maps-link:hover{background:#4a5e47;}
+  .card button.share-btn{
+    display:inline-flex; align-items:center; gap:6px; font-family:'Inter';
+    font-weight:600; font-size:12.5px; color:var(--sage-deep);
+    background:#fff;
+    border:1px solid var(--sage-deep);
+    padding:7px 12px; border-radius:20px; cursor:pointer;
+  }
+  .card button.share-btn:hover{background:#f3efe6;}
+
+  @media (max-width: 480px){
+    .leaflet-popup-content{width:280px !important;}
+    .card{flex-direction:column;}
+    .card .media{flex:0 0 auto;}
+  }
+
+  footer{
+    padding:20px 24px 40px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    max-width:640px;
+  }
+  footer a{color:var(--clay); font-weight:600;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>Free Spirit Camper Spots</h1>
+    <span class="handle">@manonthenomad</span>
+  </div>
+  <p class="sub">A whole map of cool, free-to-visit camper spots across Europe — each one captured on video. Tap a flower for the clip, the story, and the exact spot on Google Maps.</p>
+</header>
+
+<div class="legend">
+  <span>🌸 <span id="spot-count">8</span> spots on the map</span>
+  <span>🎥 Video + info + exact Google Maps pin for every one</span>
+</div>
+
+<div id="map"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+  const map = L.map('map', { scrollWheelZoom:true }).setView([52.5, 5.8], 7);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    maxZoom: 18
+  }).addTo(map);
+
+  // ---- Your real spots ----
+  const spots = [
+    {
+      name: "Drenthe, Grote Rietplas Oost",
+      flag: "🇳🇱",
+      tags: "🏊🌿",
+      lat: 52.737694, lng: 6.906611,
+      info: "A fantastic swimming spot that's popular for a reason! There are several grassy areas where you can park right by the water. It's a wonderful place to spend some time. Note: for overnight stays, it's recommended to move — later in the evening — to the paved parking area instead of the grass, as the grass area can occasionally be a meeting spot for local youths in the evening.",
+      videoUrl: "https://res.cloudinary.com/xngwwxyv/video/upload/v1784114643/NL-Drenthe_v0b9j2.mp4",
+      mapsUrl: "https://maps.app.goo.gl/ek3zfyW5YDdyYgNH6",
+      instagramUrl: "https://www.instagram.com/reel/DYxowYTNm7Y/"
+    },
+    {
+      name: "Nijkerk, Parkeerplaats Stoomgemaal",
+      flag: "🇳🇱",
+      tags: "🏊🌿",
+      lat: 52.2522567, lng: 5.4386706,
+      info: "A lovely, quiet spot by the dike. Watch boats pass by from the dock, or sit on top of the dike itself — great for cycling, skating, or a run. Parking is on the other side of the dike, right next to the historic steam pumping station, which is open during the day for visitors and coffee. Note: for an official, paid spot, there's a camper park right next door — Camperpark Nijkerk aan Zee.",
+      videoUrl: "https://res.cloudinary.com/xngwwxyv/video/upload/v1784113899/NL_Nijkerk_202605_v1anih.mp4",
+      mapsUrl: "https://maps.app.goo.gl/NhtZPjKgjYszYa7o9",
+      instagramUrl: null
+    }
+  ];
+
+  document.getElementById('spot-count').textContent = spots.length;
+
+  // Cute little flower pin — five soft petals plus a center
+  function flowerIcon(){
+    return L.divIcon({
+      className: '',
+      html: `<svg width="28" height="28" viewBox="0 0 28 28">
+              <g fill="#E3B4AC">
+                <circle cx="14" cy="6" r="5.2"/>
+                <circle cx="14" cy="22" r="5.2"/>
+                <circle cx="6" cy="14" r="5.2"/>
+                <circle cx="22" cy="14" r="5.2"/>
+                <circle cx="8.2" cy="8.2" r="5"/>
+                <circle cx="19.8" cy="8.2" r="5"/>
+                <circle cx="8.2" cy="19.8" r="5"/>
+                <circle cx="19.8" cy="19.8" r="5"/>
+              </g>
+              <circle cx="14" cy="14" r="6" fill="#C98B6E"/>
+            </svg>`,
+      iconSize: [28,28],
+      iconAnchor: [14,14]
+    });
+  }
+
+  function popupHtml(spot){
+    const shareBtn = spot.instagramUrl
+      ? `<button class="share-btn" onclick='shareSpot(${JSON.stringify(spot.name)}, ${JSON.stringify(spot.instagramUrl)})'>📤 Share with travel buddy</button>`
+      : "";
+    return `
+      <div class="card">
+        <div class="media">
+          <video src="${spot.videoUrl}" controls muted playsinline></video>
+        </div>
+        <div class="content">
+          <div class="tagsrow">${spot.flag || ""} ${spot.tags || ""}</div>
+          <h3>${spot.name}</h3>
+          <p>${spot.info}</p>
+          <a class="maps-link" href="${spot.mapsUrl}" target="_blank" rel="noopener">📍 Open in Google Maps</a>
+          ${shareBtn}
+        </div>
+      </div>`;
+  }
+
+  window.shareSpot = function(name, url){
+    if (navigator.share){
+      navigator.share({
+        title: name,
+        text: `Check out this free camper spot: ${name}`,
+        url: url
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        alert("Link copied! Paste it to your travel buddy.");
+      }).catch(() => {
+        prompt("Copy this link:", url);
+      });
+    }
+  };
+
+  spots.forEach(spot => {
+    L.marker([spot.lat, spot.lng], { icon: flowerIcon() })
+      .addTo(map)
+      .bindPopup(popupHtml(spot));
+  });
+</script>
+
+</body>
+</html>

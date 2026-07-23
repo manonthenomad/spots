@@ -32,7 +32,7 @@
 
   header{
     position:relative;
-    padding:14px 20px 10px;
+    padding:14px 130px 10px 20px;
     background: var(--cream);
     border-bottom: 1px solid #ECE4D6;
     flex:0 0 auto;
@@ -64,6 +64,34 @@
     max-width:560px;
     color:var(--ink-soft);
     line-height:1.4;
+  }
+  .ig-updates-btn{
+    position:absolute;
+    top:14px;
+    right:16px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    max-width:118px;
+    background:var(--sage-deep);
+    color:#fff;
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:10.5px;
+    line-height:1.25;
+    letter-spacing:0.1px;
+    padding:7px 10px;
+    border-radius:16px;
+    text-decoration:none;
+    box-shadow:0 1px 4px rgba(60,50,30,0.12);
+    transition:background 0.15s ease;
+  }
+  .ig-updates-btn:hover{ background:var(--sage); }
+  .ig-updates-btn .bell{ font-size:14px; flex:0 0 auto; }
+  @media (max-width:380px){
+    header{ padding-right:56px; }
+    .ig-updates-btn{ max-width:auto; padding:7px 8px; border-radius:50%; }
+    .ig-updates-btn .txt{ display:none; }
   }
 
   .notebar{
@@ -204,11 +232,22 @@
   .card .no-video span{font-size:12.5px; color:var(--ink-soft);}
   .card .ig-embed-wrap{
     max-height:74vh;
-    overflow:hidden;
+    overflow-y:auto;
+    overflow-x:hidden;
     border-radius:10px;
     border:1px solid #ECE4D6;
+    width:100%;
   }
-  .card .ig-embed-wrap iframe{border-radius:10px !important;}
+  .card .ig-embed-wrap iframe,
+  .card .ig-embed-wrap blockquote.instagram-media{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    border-radius:10px !important;
+  }
+  .card.stacked{ flex-direction:column; }
+  .card.stacked .media{ flex:0 0 auto; width:100%; }
+  .card.stacked .content{ max-height:none; overflow-y:visible; }
   .card .mute-toggle{
     position:absolute;
     bottom:8px;
@@ -449,6 +488,9 @@
 <body>
 
 <header>
+  <a class="ig-updates-btn" href="https://www.instagram.com/channel/AbYvxkNgu4IPNfCP/" target="_blank" rel="noopener" aria-label="Get notifications for new spots via Instagram">
+    <span class="bell" aria-hidden="true">🔔</span><span class="txt">Get notifications for new spots!</span>
+  </a>
   <p class="brand">@manonthenomad</p>
   <h1>Campspots Map</h1>
   <p class="sub">Your interactive guide to free overnight parking across Europe. All spots have a video, story, and Maps pin. Tap a spot to begin exploring!</p>
@@ -796,6 +838,7 @@
     const toggleBtn = hasToggle
       ? `<button class="toggle-media-btn" data-mode="secondary">🔁 View the shared video</button>`
       : "";
+    const usesInstagram = (spot.primary && spot.primary.type === "instagram") || (spot.secondary && spot.secondary.type === "instagram");
     const mediaCol = spot.primary
       ? `<div class="media">
            <div class="media-slot">${mediaHtml(spot.primary)}</div>
@@ -803,7 +846,7 @@
          </div>`
       : "";
     return `
-      <div class="card${spot.primary ? "" : " no-media"}">
+      <div class="card${spot.primary ? "" : " no-media"}${usesInstagram ? " stacked" : ""}">
         ${mediaCol}
         <div class="content">
           <div class="tagsrow">${spot.flag || ""} ${spot.tags.join(" ")}</div>

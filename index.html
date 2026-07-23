@@ -7,11 +7,13 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script async src="//www.instagram.com/embed.js"></script>
 <style>
   :root{
     --cream: #FBF7F0;
     --sage: #8FA98A;
     --sage-deep: #5C7458;
+    --sage-pale: #EAF0E7;
     --dustyrose: #E3B4AC;
     --clay: #C98B6E;
     --ink: #3A3630;
@@ -30,42 +32,92 @@
 
   header{
     position:relative;
-    padding:20px 24px 16px;
+    padding:14px 20px 10px;
     background: var(--cream);
     border-bottom: 1px solid #ECE4D6;
     flex:0 0 auto;
   }
-  .brand{
-    display:flex;
-    align-items:baseline;
-    gap:14px;
-    flex-wrap:wrap;
+  header .brand{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:12px;
+    letter-spacing:0.3px;
+    color:var(--clay);
+    margin:0 0 3px;
   }
-  .brand h1{
+  header h1{
     font-family:'Fraunces', serif;
     font-weight:500;
     font-optical-sizing:auto;
-    font-size:clamp(22px, 3.4vw, 30px);
+    font-size:clamp(19px, 5vw, 26px);
     margin:0;
     color:var(--sage-deep);
     letter-spacing:-0.3px;
-  }
-  .brand .handle{
-    font-family:'Inter', sans-serif;
-    color:var(--sage-deep);
-    background:#fff;
-    border:1px solid var(--sage);
-    font-size:13px;
-    font-weight:500;
-    padding:4px 12px;
-    border-radius:20px;
+    line-height:1.2;
   }
   header p.sub{
-    margin:6px 0 0;
-    font-size:14px;
+    margin:4px 0 0;
+    font-size:12.5px;
     max-width:560px;
     color:var(--ink-soft);
     line-height:1.4;
+  }
+
+  .notebar{
+    flex:0 0 auto;
+    background:var(--sage-pale);
+    color:var(--sage-deep);
+    font-weight:600;
+    font-size:12px;
+    text-align:center;
+    padding:6px 14px;
+    border-bottom:1px solid #ECE4D6;
+  }
+
+  .filterbar{
+    flex:0 0 auto;
+    padding:7px 14px;
+    background:#fff;
+    border-bottom:1px solid #ECE4D6;
+  }
+  .filter-row{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    overflow-x:auto;
+    white-space:nowrap;
+    padding:2px 0;
+  }
+  .filter-row .flabel{
+    font-size:10px;
+    color:var(--ink-soft);
+    font-weight:700;
+    letter-spacing:0.5px;
+    flex:0 0 auto;
+    margin-right:2px;
+  }
+  .icon-filter-btn{
+    flex:0 0 auto;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    font-size:13px;
+    background:var(--sage-pale);
+    border:1.5px solid transparent;
+    border-radius:20px;
+    padding:4px 9px;
+    cursor:pointer;
+    line-height:1;
+    color:var(--ink);
+    font-family:'Inter';
+  }
+  .icon-filter-btn .lbl{font-size:10px; font-weight:600;}
+  .icon-filter-btn.active{
+    border-color:var(--sage-deep);
+    background:#fff;
   }
 
   #map{
@@ -76,17 +128,29 @@
 
   .legend{
     display:flex;
-    gap:20px;
-    padding:10px 24px;
-    font-size:13px;
+    gap:18px;
+    padding:7px 20px;
+    font-size:12px;
     background:#fff;
     flex-wrap:wrap;
-    border-bottom:1px solid #ECE4D6;
+    border-top:1px solid #ECE4D6;
     color:var(--sage-deep);
     font-weight:500;
     flex:0 0 auto;
   }
-  .legend span{display:flex;align-items:center;gap:7px;}
+  .legend span{display:flex;align-items:center;gap:6px;}
+
+  footer{
+    flex:0 0 auto;
+    padding:8px 20px;
+    font-size:11px;
+    line-height:1.4;
+    color:var(--ink-soft);
+    background:var(--cream);
+    border-top:1px solid #ECE4D6;
+    text-align:center;
+  }
+  footer a{color:var(--sage-deep); font-weight:600; text-decoration:none;}
 
   /* --- Popup card --- */
   .leaflet-popup-content-wrapper{
@@ -97,102 +161,340 @@
     border: 1px solid #ECE4D6;
   }
   .leaflet-popup-tip{background:#fff;}
-  .leaflet-popup-content{margin:0; width:440px !important;}
-  .leaflet-popup-close-button{color:var(--ink-soft) !important; font-size:20px !important;}
+  .leaflet-popup-content{margin:0; width:min(94vw, 480px) !important;}
+  .leaflet-popup-close-button{color:var(--ink-soft) !important; font-size:22px !important; z-index:10;}
 
   .card{
     position:relative;
-    padding:16px;
+    padding:14px;
     display:flex;
-    gap:14px;
+    gap:10px;
   }
   .card .media{
-    flex:0 0 42%;
+    flex:0 0 62%;
     display:flex;
     flex-direction:column;
-    gap:8px;
+    gap:6px;
   }
+  .card .media-slot{position:relative;}
   .card video{
     width:100%;
-    aspect-ratio:16/9;
+    aspect-ratio:9/16;
     height:auto;
+    max-height:74vh;
     border-radius:10px;
     border:1px solid #ECE4D6;
     display:block;
     background:#000;
     object-fit:cover;
   }
+  .card .no-video{
+    width:100%;
+    aspect-ratio:9/16;
+    max-height:74vh;
+    border-radius:10px;
+    border:1px solid #ECE4D6;
+    background: linear-gradient(160deg, #F3EEE0, #EAE2CC);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:14px;
+  }
+  .card .no-video span{font-size:12.5px; color:var(--ink-soft);}
+  .card .ig-embed-wrap{
+    max-height:74vh;
+    overflow:hidden;
+    border-radius:10px;
+    border:1px solid #ECE4D6;
+  }
+  .card .ig-embed-wrap iframe{border-radius:10px !important;}
+  .card .mute-toggle{
+    position:absolute;
+    bottom:8px;
+    right:8px;
+    width:28px;
+    height:28px;
+    border:none;
+    border-radius:50%;
+    background:rgba(0,0,0,0.55);
+    color:#fff;
+    font-size:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+  .card .toggle-media-btn{
+    display:block;
+    width:100%;
+    text-align:center;
+    font-family:'Inter';
+    font-weight:600;
+    font-size:11px;
+    color:var(--sage-deep);
+    background:#fff;
+    border:1px solid var(--sage-deep);
+    padding:6px 8px;
+    border-radius:20px;
+    cursor:pointer;
+  }
+  .card .toggle-media-btn:hover{background:var(--sage-pale);}
   .card .content{
     flex:1 1 auto;
     min-width:0;
     display:flex;
     flex-direction:column;
+    overflow-y:auto;
+    max-height:74vh;
   }
   .card .tagsrow{
-    font-size:15px;
-    letter-spacing:2px;
+    font-size:13px;
+    letter-spacing:1.5px;
     margin-bottom:2px;
   }
   .card h3{
     font-family:'Fraunces', serif;
     font-weight:500;
-    margin:0 0 4px; font-size:16.5px; color:var(--sage-deep);
+    margin:0 0 4px; font-size:14.5px; color:var(--sage-deep);
     line-height:1.2;
   }
-  .card p{margin:0 0 10px; font-size:12.5px; line-height:1.5; color:var(--ink-soft);}
+  .card p{margin:0 0 8px; font-size:11px; line-height:1.45; color:var(--ink-soft);}
   .card a.maps-link{
-    display:inline-flex; align-items:center; gap:6px; font-family:'Inter';
-    font-weight:600; font-size:12.5px; color:#fff;
+    display:inline-flex; align-items:center; gap:5px; font-family:'Inter';
+    font-weight:600; font-size:11px; color:#fff;
     background: var(--sage-deep);
-    padding:7px 12px; border-radius:20px; text-decoration:none;
-    margin-bottom:6px;
+    padding:6px 10px; border-radius:20px; text-decoration:none;
+    margin-bottom:5px;
     justify-content:center;
   }
   .card a.maps-link:hover{background:#4a5e47;}
   .card button.share-btn{
-    display:inline-flex; align-items:center; gap:6px; font-family:'Inter';
-    font-weight:600; font-size:12.5px; color:var(--sage-deep);
+    display:inline-flex; align-items:center; gap:5px; font-family:'Inter';
+    font-weight:600; font-size:11px; color:var(--sage-deep);
     background:#fff;
     border:1px solid var(--sage-deep);
-    padding:7px 12px; border-radius:20px; cursor:pointer;
+    padding:6px 10px; border-radius:20px; cursor:pointer;
   }
   .card button.share-btn:hover{background:#f3efe6;}
 
+  .card.no-media .content{
+    max-height:60vh;
+  }
+  .card.no-media h3{font-size:17px;}
+  .card.no-media p{font-size:13px; line-height:1.55;}
+  .card.no-media .tagsrow{font-size:16px;}
+
   @media (max-width: 480px){
-    .leaflet-popup-content{width:280px !important;}
-    .card{flex-direction:column;}
-    .card .media{flex:0 0 auto;}
+    .leaflet-popup-content{width:min(96vw, 400px) !important;}
+    .card{padding:10px; gap:8px;}
+    .card .media{flex:0 0 58%;}
   }
 
-  footer{
-    padding:20px 24px 40px;
-    font-size:12.5px;
-    color:var(--ink-soft);
-    max-width:640px;
+  /* --- Floating "OPEN VIDEO MENU" button --- */
+  .video-menu-fab{
+    position:fixed;
+    right:16px;
+    bottom:16px;
+    z-index:2000;
+    background: linear-gradient(135deg, var(--clay), #a8452b);
+    color:#fff;
+    border:2px solid #fff;
+    padding:16px 22px;
+    border-radius:32px;
+    font-family:'Inter';
+    font-weight:800;
+    font-size:14px;
+    letter-spacing:0.5px;
+    box-shadow:0 14px 34px rgba(58,54,48,0.45), 0 0 0 6px rgba(201,139,110,0.28);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    animation: vmPulse 2s ease-in-out infinite;
   }
-  footer a{color:var(--clay); font-weight:600;}
+  .video-menu-fab .vm-fab-icon{ font-size:19px; line-height:1; }
+  .video-menu-fab:hover{ background:linear-gradient(135deg, #d69577, var(--clay)); transform:translateY(-2px); }
+  @keyframes vmPulse{
+    0%,100%{ box-shadow:0 14px 34px rgba(58,54,48,0.45), 0 0 0 6px rgba(201,139,110,0.28); }
+    50%{ box-shadow:0 16px 40px rgba(58,54,48,0.5), 0 0 0 13px rgba(201,139,110,0.08); }
+  }
+
+  /* --- Netflix-style video menu overlay --- */
+  .video-menu-overlay{
+    position:fixed; inset:0; z-index:3000;
+    background:rgba(30,27,23,0.97);
+    display:flex; flex-direction:column;
+  }
+  .video-menu-overlay[hidden]{
+    display:none !important;
+  }
+  .video-menu-overlay[hidden]{ display:none; }
+  .vm-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 20px 6px;
+    flex:0 0 auto;
+  }
+  .vm-header h2{
+    font-family:'Fraunces', serif; color:#fff; font-weight:500; font-size:20px; margin:0;
+  }
+  .vm-header p{
+    margin:2px 0 0; font-size:11.5px; color:rgba(255,255,255,0.55);
+  }
+  .vm-close{
+    background:rgba(255,255,255,0.1); border:none; color:#fff; width:34px; height:34px;
+    border-radius:50%; font-size:16px; cursor:pointer; flex:0 0 auto;
+  }
+  .vm-close:hover{ background:rgba(255,255,255,0.2); }
+  .vm-filterrow{
+    display:flex; gap:6px; padding:6px 20px 12px; overflow-x:auto; flex:0 0 auto;
+  }
+  .vm-flag-btn{
+    flex:0 0 auto; font-size:16px; background:rgba(255,255,255,0.08);
+    border:1.5px solid transparent; border-radius:20px; padding:5px 11px; cursor:pointer;
+    line-height:1;
+  }
+  .vm-flag-btn.active{ border-color:var(--clay); background:rgba(201,139,110,0.25); }
+  .vm-grid{
+    flex:1 1 auto; overflow-y:auto; padding:8px 20px 28px;
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(128px,1fr)); gap:14px;
+  }
+  .vm-tile{
+    position:relative; border-radius:12px; overflow:hidden; cursor:pointer;
+    aspect-ratio:9/16; background:#15130f; transition:transform .18s ease;
+  }
+  .vm-tile:hover{ transform:scale(1.045); z-index:5; box-shadow:0 12px 26px rgba(0,0,0,0.5); }
+  .vm-thumb{ position:absolute; inset:0; }
+  .vm-thumb-video{ width:100%; height:100%; object-fit:cover; display:block; }
+  .vm-thumb-ig{
+    width:100%; height:100%;
+    background:linear-gradient(145deg, #4f5bd5, #962fbf, #d62976, #fa7e1e, #feda75);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .vm-ig-icon{ font-size:34px; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  .vm-playicon{
+    position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:50%;
+    background:rgba(0,0,0,0.5); color:#fff; font-size:9px; display:flex; align-items:center; justify-content:center;
+  }
+  .vm-flags{
+    position:absolute; top:8px; left:8px; font-size:13px; line-height:1.3; max-width:72%;
+    display:flex; flex-wrap:wrap; gap:2px;
+  }
+  .vm-info{
+    position:absolute; left:0; right:0; bottom:0;
+    background:linear-gradient(to top, rgba(0,0,0,0.88), rgba(0,0,0,0));
+    padding:22px 8px 8px; color:#fff;
+  }
+  .vm-count{ font-size:10px; font-weight:700; color:var(--dustyrose); letter-spacing:0.4px; }
+  .vm-name{ font-size:11px; font-weight:600; line-height:1.25; margin-top:2px; }
+
+  /* --- Highlight status bar (shown after picking a video) --- */
+  .highlight-bar{
+    position:fixed; left:50%; transform:translateX(-50%); bottom:78px; z-index:2100;
+    background:var(--sage-deep); color:#fff; font-size:12px; font-weight:600;
+    padding:9px 8px 9px 14px; border-radius:24px; display:flex; align-items:center; gap:10px;
+    box-shadow:0 8px 20px rgba(58,54,48,0.3);
+    max-width:90vw;
+  }
+  .highlight-bar[hidden]{
+    display:none !important;
+  }
+  .highlight-bar span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .highlight-bar button{
+    background:rgba(255,255,255,0.2); border:none; color:#fff; font-size:11px; font-weight:700;
+    padding:4px 9px; border-radius:14px; cursor:pointer; flex:0 0 auto;
+  }
+  .highlight-bar button:hover{ background:rgba(255,255,255,0.32); }
+
+  @media (max-width: 480px){
+    .vm-grid{ grid-template-columns:repeat(auto-fill, minmax(102px,1fr)); gap:10px; }
+    .video-menu-fab{ font-size:12.5px; padding:14px 18px; right:12px; bottom:12px; }
+    .highlight-bar{ bottom:70px; font-size:11px; }
+  }
+
+  /* --- Map pins: little vertical "screens" showing the video --- */
+  .spot-pin{ background:none !important; border:none !important; }
+  .pin-screen{
+    position:relative;
+    width:34px; height:50px;
+    border-radius:8px;
+    overflow:hidden;
+    border:2px solid #fff;
+    box-shadow:0 3px 9px rgba(58,54,48,0.4);
+    background: linear-gradient(160deg, #4f5bd5, #962fbf, #d62976, #fa7e1e, #feda75);
+  }
+  .pin-screen img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+  .pin-screen.thumb-fallback img{ display:none; }
+  .pin-screen .pin-ig-icon{
+    position:absolute; inset:0; display:none;
+    align-items:center; justify-content:center;
+    font-size:15px; filter:drop-shadow(0 1px 2px rgba(0,0,0,0.35));
+  }
+  .pin-screen.thumb-fallback .pin-ig-icon{ display:flex; }
+  .pin-flag{
+    position:absolute; top:2px; left:2px; font-size:11px; line-height:1;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,0.45));
+  }
+  .pin-tail{
+    width:0; height:0; margin:-2px auto 0;
+    border-left:6px solid transparent;
+    border-right:6px solid transparent;
+    border-top:8px solid #fff;
+    filter:drop-shadow(0 2px 2px rgba(58,54,48,0.3));
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="brand">
-    <h1>Free Spirit Camper Spots</h1>
-    <span class="handle">@manonthenomad</span>
-  </div>
-  <p class="sub">A whole map of cool, free-to-visit camper spots across Europe — each one captured on video. Tap a flower for the clip, the story, and the exact spot on Google Maps.</p>
+  <p class="brand">@manonthenomad</p>
+  <h1>Campspots Map</h1>
+  <p class="sub">Your interactive guide to free overnight parking across Europe. All spots have a video, story, and Maps pin. Tap a spot to begin exploring!</p>
 </header>
 
-<div class="legend">
-  <span>🌸 <span id="spot-count">8</span> spots on the map</span>
-  <span>🎥 Video + info + exact Google Maps pin for every one</span>
+<div class="notebar">🌿 Respect nature and locals: Leave no trace and keep it clean! 🌿</div>
+
+<div class="filterbar">
+  <div class="filter-row" id="filter-locations"><span class="flabel">LOCATIONS</span></div>
+  <div class="filter-row" id="filter-features"><span class="flabel">FEATURES</span></div>
 </div>
 
 <div id="map"></div>
 
+<div class="legend">
+  <span>📍 <span id="spot-count">0</span> spots on the map</span>
+  <span>🎥 Video + info + exact Google Maps pin</span>
+</div>
+
+<footer>
+  More amazing spots will follow!<br>
+  Follow also on Instagram: <a href="https://www.instagram.com/manonthenomad" target="_blank" rel="noopener">@manonthenomad</a>
+</footer>
+
+<button id="videoMenuBtn" class="video-menu-fab"><span class="vm-fab-icon">🎬</span> OPEN VIDEO MENU</button>
+
+<div id="videoMenuOverlay" class="video-menu-overlay" hidden>
+  <div class="vm-header">
+    <div>
+      <h2>🎬 Video Overview</h2>
+      <p>Tap a video to see exactly which spots are in it</p>
+    </div>
+    <button id="vmCloseBtn" class="vm-close" aria-label="Close">✕</button>
+  </div>
+  <div class="vm-filterrow" id="vmFilterRow"></div>
+  <div class="vm-grid" id="vmGrid"></div>
+</div>
+
+<div id="highlightBar" class="highlight-bar" hidden>
+  <span id="highlightLabel"></span>
+  <button id="clearHighlightBtn">✕ Clear</button>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
-  const map = L.map('map', { scrollWheelZoom:true }).setView([52.5, 5.8], 7);
+  const map = L.map('map', { scrollWheelZoom:true }).setView([44.8, 1.5], 5);
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap &copy; CARTO',
@@ -200,93 +502,553 @@
   }).addTo(map);
 
   // ---- Your real spots ----
+  // primary: the media shown first (own Cloudinary video, or own Instagram reel if no direct video)
+  // secondary: an optional "shared / together" Instagram post covering multiple spots,
+  //            reachable via a toggle button if it exists and differs from primary.
   const spots = [
     {
       name: "Drenthe, Grote Rietplas Oost",
-      flag: "🇳🇱",
-      tags: "🏊🌿",
+      flag: "🇳🇱", tags: ["🏊","🌿"],
       lat: 52.737694, lng: 6.906611,
       info: "A fantastic swimming spot that's popular for a reason! There are several grassy areas where you can park right by the water. It's a wonderful place to spend some time. Note: for overnight stays, it's recommended to move — later in the evening — to the paved parking area instead of the grass, as the grass area can occasionally be a meeting spot for local youths in the evening.",
-      videoUrl: "https://res.cloudinary.com/xngwwxyv/video/upload/v1784114643/NL-Drenthe_v0b9j2.mp4",
       mapsUrl: "https://maps.app.goo.gl/ek3zfyW5YDdyYgNH6",
-      instagramUrl: "https://www.instagram.com/reel/DYxowYTNm7Y/"
+      primary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/f_auto,q_auto/v1784114643/NL-Drenthe_v0b9j2.mp4" },
+      secondary: { type: "instagram", url: "https://www.instagram.com/p/DZaeNvlNXg1/" }
     },
     {
       name: "Nijkerk, Parkeerplaats Stoomgemaal",
-      flag: "🇳🇱",
-      tags: "🏊🌿",
+      flag: "🇳🇱", tags: ["🏊","🌿"],
       lat: 52.2522567, lng: 5.4386706,
       info: "A lovely, quiet spot by the dike. Watch boats pass by from the dock, or sit on top of the dike itself — great for cycling, skating, or a run. Parking is on the other side of the dike, right next to the historic steam pumping station, which is open during the day for visitors and coffee. Note: for an official, paid spot, there's a camper park right next door — Camperpark Nijkerk aan Zee.",
-      videoUrl: "https://res.cloudinary.com/xngwwxyv/video/upload/v1784113899/NL_Nijkerk_202605_v1anih.mp4",
       mapsUrl: "https://maps.app.goo.gl/NhtZPjKgjYszYa7o9",
-      instagramUrl: null
+      primary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/f_auto,q_auto/v1784113899/NL_Nijkerk_202605_v1anih.mp4" },
+      secondary: { type: "instagram", url: "https://www.instagram.com/p/DZaeNvlNXg1/" }
+    },
+    {
+      name: "La Hoëgne Valley, Promenade de la Hoëgne",
+      flag: "🇧🇪", tags: ["🌲"],
+      lat: 50.5079789, lng: 5.9603952,
+      info: "In the heart of beautiful nature! You'll be surrounded by the soothing sound of flowing water. It's the perfect starting point for beautiful hikes, featuring small bridges, scenic waterfalls and rugged rock formations. Note: because it's a popular hiking destination, it can get busy with visitors. Also, mobile internet reception can be weak in this valley.",
+      mapsUrl: "https://maps.app.goo.gl/gzKwyQhgXDuWpDDd7",
+      primary: { type: "instagram", url: "https://www.instagram.com/reel/DQ9qrN4jeVr/" },
+      secondary: null
+    },
+    {
+      name: "Ardennes, La Roche-en-Ardenne",
+      flag: "🇧🇪", tags: ["🌲","🏔️"],
+      lat: 50.183405, lng: 5.633838,
+      info: "A hidden gem! This secret parking spot has enough space for a few campers and offers a beautiful view over the forested valley. It's perfectly located between La Roche-en-Ardenne and Le Hérou. You absolutely must go hiking at Le Hérou; the steep rock formations are truly spectacular — it might just be the most beautiful part of the Ardennes. Note: the route might look a bit strange at first, as you have to drive through a holiday park. Just keep going to the end and head up; that's where you'll find this great spot. There might be some debris or waste from maintenance work.",
+      mapsUrl: "https://maps.app.goo.gl/NDczbd73ZbNfSDpLA",
+      primary: { type: "instagram", url: "https://www.instagram.com/p/DZaeNvlNXg1/" },
+      secondary: null
+    },
+    {
+      name: "Saint-Nabord",
+      flag: "🇫🇷", tags: ["🌿"],
+      lat: 48.052083, lng: 6.593306,
+      info: "The ultimate hidden gem for a quick stopover! This place is unexpectedly magical and located very close to the highway. There are several fishing ponds, each offering plenty of spots where you can create your own little paradise right by the water. It's absolutely perfect for setting up a hammock! Note: because it's near the highway, you can hear a light hum of traffic in the background. Also, it's unclear whether swimming is allowed in these fishing ponds, so it's best to check the local signs first.",
+      mapsUrl: "https://maps.app.goo.gl/yz9nMmEyC3FyfXGaA",
+      primary: { type: "instagram", url: "https://www.instagram.com/p/DZaeNvlNXg1/" },
+      secondary: null
+    },
+    {
+      name: "Pyrenees",
+      flag: "🇪🇸", tags: ["🏔️"],
+      lat: 42.666222, lng: -0.599806,
+      info: "High up in the mountains with an incredible 360-degree view! It's a truly breathtaking spot where you feel on top of the world, surrounded by stunning panoramic scenery. A perfect place to disconnect and enjoy the silence of the high peaks. Note: the drive up is quite an adventure, involving narrow mountain roads. Be extra careful when passing through the small village along the way, as the streets there are especially tight. Make sure your vehicle is up for the climb and take it slow!",
+      mapsUrl: "https://maps.app.goo.gl/8ggPFY5h5BwcVAzu7",
+      primary: { type: "instagram", url: "https://www.instagram.com/p/DZaeNvlNXg1/" },
+      secondary: null
+    },
+    {
+      name: "Near Jaca",
+      flag: "🇪🇸", tags: ["🌿"],
+      lat: 42.5486389, lng: -0.53,
+      info: "The sunset view over the valley between the mountains is absolutely amazing! It is the perfect spot to relax after a visit to Jaca, a very cute town in the Pyrenees. Note: this spot is located right next to some houses, so it is only suitable for a quick and low-profile overnight stay.",
+      mapsUrl: "https://maps.app.goo.gl/VMtwbL2ZUjyvDCmq8",
+      primary: null,
+      secondary: null
+    },
+    {
+      name: "Getaria",
+      flag: "🇪🇸", tags: ["🌊","🏊","🏙️","🚽"],
+      lat: 43.3036132, lng: -2.2072358,
+      info: "Located on the North Coast in the beautiful town of Getaria. This spot features a small, tucked-away beach and you are staying right next to this incredibly charming town. Note: parking is paid during the day, but it is free between 8 PM and 10 AM. Opening hours of the nearby public toilets are unclear, so it's best to be prepared!",
+      mapsUrl: "https://maps.app.goo.gl/se2yASbyaNLWg2iQ6",
+      primary: { type: "instagram", url: "https://www.instagram.com/p/DZaeNvlNXg1/" },
+      secondary: null
+    },
+    {
+      name: "Elorriaga",
+      flag: "🇪🇸", tags: ["🏔️","🚽","🚰"],
+      lat: 43.2880167, lng: -2.2866214,
+      info: "An official and legal parking spot on top of the hill with stunning views of the North Coast! It's perfectly equipped with picnic benches, a water tap, and a small cafeteria that is open during the day. A famous hiking path runs past it and features public restrooms. Note: there is a strict height restriction of 2 meters. This is enforced very seriously, and the police check the area multiple times a day.",
+      mapsUrl: "https://maps.app.goo.gl/znzoJoLGQucxH2sq5",
+      primary: null,
+      secondary: null
+    },
+    {
+      name: "Dueñas",
+      flag: "🇪🇸", tags: ["🌿"],
+      lat: 41.8713056, lng: -4.5344444,
+      info: "A peaceful hidden gem right by a lovely little stream! It's wonderfully private and perfect for a relaxing break. Located conveniently close to the road, this spot is an ideal \"in-between\" stop and the perfect place to set up a hammock by the water. Note: it is a small spot, so you might end up sharing the space with locals visiting. Also, it's unclear if the river is suitable for swimming.",
+      mapsUrl: "https://maps.app.goo.gl/XpoTQyrfYUoNKmzF9",
+      primary: { type: "instagram", url: "https://www.instagram.com/p/DaBEZmqNxA2/" },
+      secondary: null
+    },
+    {
+      name: "Lake Embalse De Santa Teresa",
+      flag: "🇪🇸", tags: ["🌿","🏊"],
+      lat: 40.657735, lng: -5.601486,
+      info: "Amazing massive lake with plenty of spots to park right by the water! The water is lovely and refreshing for a swim, and you'll get the most stunning sunsets and sunrises. Note: you may see some locals stopping by or spending time at the lake as well.",
+      mapsUrl: "https://maps.app.goo.gl/kWw5Qnbw5zPqxxGt7",
+      primary: { type: "instagram", url: "https://www.instagram.com/p/DZaeNvlNXg1/" },
+      secondary: null
+    },
+    {
+      name: "Embalse de Contreras",
+      flag: "🇪🇸", tags: ["🏔️","🏊"],
+      lat: 39.545282, lng: -1.534929,
+      info: "This spot is high up on our list of favorites! There is an amazing dirt road that leads you downhill, right between the mountains. The water is crystal clear, and the stargazing at night is truly insane. There are quite a few spots right next to the water, but be prepared to share the area with other campers or local visitors. Note: it's quite a drive all the way down to the lake, but even the drive is so freaking cool. Highly recommended, but drive carefully.",
+      mapsUrl: "https://maps.app.goo.gl/igLRtVqRYYdktiiSA",
+      primary: { type: "instagram", url: "https://www.instagram.com/p/DaBEZmqNxA2/" },
+      secondary: null
+    },
+    {
+      name: "Platja Casablanca",
+      flag: "🇪🇸", tags: ["🌊","🏊"],
+      lat: 39.7534996, lng: -0.1682303,
+      info: "A hidden coastal escape between Valencia and Barcelona. Among all the paid campsites in this area, this is one of the few spots where you can stay for free, with only a small hill between you and the sea. Make sure to sit on top of the tiny dike for an amazing sunset view over the mountains! There is plenty of space, though you will likely be sharing the area with other campers. Note: there are some unconfirmed rumors about break-ins here — always best to stay alert and keep an eye on your van.",
+      mapsUrl: "https://maps.app.goo.gl/13TxnvmnBqMsBqi38",
+      primary: { type: "instagram", url: "https://www.instagram.com/p/DZ5UXM7NP57/" },
+      secondary: null
+    },
+    {
+      name: "Serra Da Estrela",
+      flag: "🇵🇹", tags: ["🏔️"],
+      lat: 40.4721944, lng: -7.33975,
+      info: "A challenging drive all the way to the top of the mountain, but the 360-degree panoramic views are absolutely worth it! This spot is located just outside the national park, offering a stunning outlook over the area and positioned right near the wind turbines. Note: it is extremely windy here — sometimes almost too much.",
+      mapsUrl: "https://maps.app.goo.gl/mQKk8NS5BvAKAp2s7",
+      primary: { type: "instagram", url: "https://www.instagram.com/p/DZaeNvlNXg1/" },
+      secondary: null
+    },
+    {
+      name: "Falgaroso do Maio",
+      flag: "🇵🇹", tags: ["🌲","🏊"],
+      lat: 40.3615278, lng: -8.1766389,
+      info: "Located right next to a stunning lake tucked away in the forest. The water is incredibly refreshing! On the way in, you'll pass a popular swimming spot known to the locals, but if you keep driving a bit further down the road, you'll find a small, perfect corner for one van — a truly private and beautiful hidden gem. Note: this specific spot only has room for one van, though there may be more spots available if you continue exploring the area.",
+      mapsUrl: "https://maps.app.goo.gl/9HqQjuEJca9F3VLJ9",
+      primary: { type: "instagram", url: "https://www.instagram.com/p/DZsYqfxNdYi/" },
+      secondary: null
+    },
+    {
+      name: "Zona de Lazer da Volta da Lomba",
+      flag: "🇵🇹", tags: ["🏊","🌿","🚽","🚿","🔥","🚰"],
+      lat: 40.242314, lng: -8.165118,
+      info: "Ultimate vanlife paradise: this place is 100% free and legal, and officially allows overnight stays. It has everything you need — clean toilets & showers, a beach volleyball court, picnic tables & beach umbrellas, and built-in BBQs (perfect, since open campfires are not allowed!). Note: fires are strictly only permitted in the BBQs.",
+      mapsUrl: "https://maps.app.goo.gl/qob9R1FTU8hQxXpw8",
+      primary: { type: "instagram", url: "https://www.instagram.com/p/DZsYqfxNdYi/" },
+      secondary: null
+    },
+    {
+      name: "Millau",
+      flag: "🇫🇷", tags: ["🏔️","🏊"],
+      lat: 44.1207988, lng: 3.1922532,
+      info: "A true hidden paradise in the South of France! This spot features stunning crystal-clear, green-blue water. The ultimate place to hang your hammock between the trees and float right above the water. There is a pullover on the side of the road with space for about five vehicles, and a short path leads you straight down to a beautiful beach. This gorgeous mountain region is also famous for its epic hiking trails. Note: the water here is very cold.",
+      mapsUrl: "https://maps.app.goo.gl/A6yNB3g7F4zNqmoW9",
+      primary: { type: "instagram", url: "https://www.instagram.com/p/DaTYX6RxQcR/" },
+      secondary: null
+    },
+    {
+      name: "Girenbad Bei Hinwil",
+      flag: "🇨🇭", tags: ["🏔️","🔥","🚽"],
+      lat: 47.3078412, lng: 8.8703649,
+      info: "This is a completely free and legal overnight parking! You'll wake up to breathtaking mountain views and have the company of some cute cows grazing nearby. There is plenty of parking space, and it's well-equipped with a firepit and a public toilet! Note: The ground is a bit on a slope.",
+      mapsUrl: "https://maps.app.goo.gl/5117S6o1PU1CBMVR9",
+      primary: { type: "instagram", url: "https://www.instagram.com/reel/DSesHQSDSFl/" },
+      secondary: null
+    },
+    {
+      name: "Jurapark Aargau",
+      flag: "🇨🇭", tags: ["🏔️"],
+      lat: 47.5309702, lng: 8.120442,
+      info: "Located on top of a hill, this spot offers a great view over the valley in a stunning natural area. There is another spot further down this same road that features a firepit. (Check out the other spot on the map). Note: The space here is limited, with room for about four vans parked directly next to each other. The other spot further down the road offers more space.",
+      mapsUrl: "https://maps.app.goo.gl/CarEKkHr7A4XV5Cd8",
+      primary: { type: "instagram", url: "https://www.instagram.com/reel/DSesHQSDSFl/" },
+      secondary: null
+    },
+    {
+      name: "Jurapark Aargau (firepit spot)",
+      flag: "🇨🇭", tags: ["🏔️","🔥"],
+      lat: 47.5306775, lng: 8.1261556,
+      info: "This spot looked fantastic! It was quite spacious, offered an amazing view, and even had an official firepit. However, we didn't end up staying here ourselves because there was a huge hunters' gathering taking place when we arrived. We opted for another spot along the same road. (You can find that one on the map as well!) Note: The area can sometimes get packed with hunters, haha.",
+      mapsUrl: "https://maps.app.goo.gl/oALmsG3jLpX8keiH6",
+      primary: { type: "instagram", url: "https://www.instagram.com/reel/DSesHQSDSFl/" },
+      secondary: null
     }
   ];
 
   document.getElementById('spot-count').textContent = spots.length;
 
-  // Cute little flower pin — five soft petals plus a center
-  function flowerIcon(){
-    return L.divIcon({
-      className: '',
-      html: `<svg width="28" height="28" viewBox="0 0 28 28">
-              <g fill="#E3B4AC">
-                <circle cx="14" cy="6" r="5.2"/>
-                <circle cx="14" cy="22" r="5.2"/>
-                <circle cx="6" cy="14" r="5.2"/>
-                <circle cx="22" cy="14" r="5.2"/>
-                <circle cx="8.2" cy="8.2" r="5"/>
-                <circle cx="19.8" cy="8.2" r="5"/>
-                <circle cx="8.2" cy="19.8" r="5"/>
-                <circle cx="19.8" cy="19.8" r="5"/>
-              </g>
-              <circle cx="14" cy="14" r="6" fill="#C98B6E"/>
-            </svg>`,
-      iconSize: [28,28],
-      iconAnchor: [14,14]
+  // ---- Icon filter bar: fixed categories ----
+  const locationIcons = [
+    { icon: "🏊", label: "Swim" },
+    { icon: "🌿", label: "Nature" },
+    { icon: "🌲", label: "Forest" },
+    { icon: "🏔️", label: "Mountain" },
+    { icon: "🌊", label: "Sea" },
+    { icon: "🏙️", label: "City/Village" }
+  ];
+  const featureIcons = [
+    { icon: "🔥", label: "BBQ/Fire" },
+    { icon: "🚰", label: "Water" },
+    { icon: "🚽", label: "Toilet" },
+    { icon: "🚿", label: "Shower" }
+  ];
+
+  function buildFilterRow(containerId, items){
+    const row = document.getElementById(containerId);
+    items.forEach(({ icon, label }) => {
+      const btn = document.createElement('button');
+      btn.className = 'icon-filter-btn';
+      btn.dataset.icon = icon;
+      btn.innerHTML = `${icon} <span class="lbl">${label}</span>`;
+      btn.onclick = () => applyFilter(icon);
+      row.appendChild(btn);
+    });
+  }
+  buildFilterRow('filter-locations', locationIcons);
+  buildFilterRow('filter-features', featureIcons);
+
+  let activeFilter = null;
+  function applyFilter(icon){
+    if (typeof clearHighlight === 'function') clearHighlight();
+    activeFilter = (activeFilter === icon) ? null : icon;
+    markerRefs.forEach(({ marker, spot }) => {
+      const el = marker.getElement();
+      if (!el) return;
+      if (!activeFilter){
+        el.style.opacity = 1;
+        el.style.filter = 'none';
+      } else if (spot.tags.includes(activeFilter)){
+        el.style.opacity = 1;
+        el.style.filter = 'drop-shadow(0 0 7px #C98B6E)';
+      } else {
+        el.style.opacity = 0.25;
+        el.style.filter = 'none';
+      }
+    });
+    document.querySelectorAll('.icon-filter-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.icon === activeFilter);
     });
   }
 
+  // Turn a Cloudinary video URL into a static first-frame JPG thumbnail URL.
+  // Inserting "so_0" (start-offset 0s) right after /upload/ and swapping the
+  // extension to .jpg makes Cloudinary render frame 0 of that same video as an image.
+  function cloudinaryThumb(url){
+    return url
+      .replace('/upload/', '/upload/so_0,')
+      .replace(/\.mp4(\?.*)?$/, '.jpg$1');
+  }
+
+  // Small vertical "screen" pin: shows the real first frame for spots with their
+  // own Cloudinary video, and a recognizable Instagram-gradient placeholder for
+  // spots whose primary media is only an Instagram reel/post (no direct thumbnail
+  // can be fetched client-side from Instagram).
+  function spotIcon(spot){
+    const media = spot.primary;
+    const thumbUrl = (media && media.type === 'cloudinary') ? cloudinaryThumb(media.url) : null;
+    const flagBadge = spot.flag ? `<span class="pin-flag">${spot.flag}</span>` : '';
+    const img = thumbUrl
+      ? `<img src="${thumbUrl}" alt="" loading="lazy" onerror="this.parentElement.classList.add('thumb-fallback')">`
+      : '';
+    return L.divIcon({
+      className: 'spot-pin',
+      html: `
+        <div class="pin-screen${thumbUrl ? '' : ' thumb-fallback'}">
+          ${img}
+          <span class="pin-ig-icon">📸</span>
+          ${flagBadge}
+        </div>
+        <div class="pin-tail"></div>`,
+      iconSize: [34, 58],
+      iconAnchor: [17, 58]
+    });
+  }
+
+  function mediaHtml(media){
+    if (!media) return "";
+    if (media.type === "cloudinary"){
+      return `<div class="video-wrap">
+                <video class="spot-video" src="${media.url}" playsinline loop></video>
+                <button class="mute-toggle" aria-label="Toggle sound">🔊</button>
+              </div>`;
+    }
+    // instagram
+    return `<div class="ig-embed-wrap">
+              <blockquote class="instagram-media" data-instgrm-permalink="${media.url}" data-instgrm-version="14" style="margin:0;width:100%;"></blockquote>
+            </div>`;
+  }
+
   function popupHtml(spot){
-    const shareBtn = spot.instagramUrl
-      ? `<button class="share-btn" onclick='shareSpot(${JSON.stringify(spot.name)}, ${JSON.stringify(spot.instagramUrl)})'>📤 Share with travel buddy</button>`
+    const hasToggle = spot.secondary && spot.secondary.url !== (spot.primary && spot.primary.url);
+    const toggleBtn = hasToggle
+      ? `<button class="toggle-media-btn" data-mode="secondary">🔁 View the shared video</button>`
+      : "";
+    const mediaCol = spot.primary
+      ? `<div class="media">
+           <div class="media-slot">${mediaHtml(spot.primary)}</div>
+           ${toggleBtn}
+         </div>`
       : "";
     return `
-      <div class="card">
-        <div class="media">
-          <video src="${spot.videoUrl}" controls muted playsinline></video>
-        </div>
+      <div class="card${spot.primary ? "" : " no-media"}">
+        ${mediaCol}
         <div class="content">
-          <div class="tagsrow">${spot.flag || ""} ${spot.tags || ""}</div>
+          <div class="tagsrow">${spot.flag || ""} ${spot.tags.join(" ")}</div>
           <h3>${spot.name}</h3>
-          <p>${spot.info}</p>
+          ${spot.info ? `<p>${spot.info}</p>` : ""}
           <a class="maps-link" href="${spot.mapsUrl}" target="_blank" rel="noopener">📍 Open in Google Maps</a>
-          ${shareBtn}
         </div>
       </div>`;
   }
 
-  window.shareSpot = function(name, url){
-    if (navigator.share){
-      navigator.share({
-        title: name,
-        text: `Check out this free camper spot: ${name}`,
-        url: url
-      }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(url).then(() => {
-        alert("Link copied! Paste it to your travel buddy.");
-      }).catch(() => {
-        prompt("Copy this link:", url);
-      });
+  function activateVideo(slotEl){
+    const video = slotEl.querySelector('.spot-video');
+    const muteBtn = slotEl.querySelector('.mute-toggle');
+    if (!video) return;
+    function updateIcon(){ muteBtn.textContent = video.muted ? '🔇' : '🔊'; }
+    video.muted = false;
+    const p = video.play();
+    if (p !== undefined){
+      p.catch(() => { video.muted = true; video.play().catch(() => {}); updateIcon(); });
     }
-  };
+    updateIcon();
+    muteBtn.onclick = () => {
+      video.muted = !video.muted;
+      if (!video.muted) video.play().catch(() => {});
+      updateIcon();
+    };
+  }
 
-  spots.forEach(spot => {
-    L.marker([spot.lat, spot.lng], { icon: flowerIcon() })
-      .addTo(map)
-      .bindPopup(popupHtml(spot));
+  function processEmbeds(){
+    if (window.instgrm && window.instgrm.Embeds){
+      window.instgrm.Embeds.process();
+    }
+  }
+
+  map.on('popupopen', function(e){
+    const el = e.popup.getElement();
+    const spot = e.popup._sourceSpot;
+    const slot = el.querySelector('.media-slot');
+    if (!slot) { processEmbeds(); return; }
+    if (slot.querySelector('.spot-video')) activateVideo(slot);
+    processEmbeds();
+
+    const toggleBtn = el.querySelector('.toggle-media-btn');
+    if (toggleBtn && spot){
+      toggleBtn.onclick = () => {
+        const showingSecondary = toggleBtn.dataset.mode === 'secondary';
+        const nextMedia = showingSecondary ? spot.secondary : spot.primary;
+        slot.innerHTML = mediaHtml(nextMedia);
+        if (slot.querySelector('.spot-video')) activateVideo(slot);
+        processEmbeds();
+        toggleBtn.textContent = showingSecondary ? '🔁 View your own video' : '🔁 View the shared video';
+        toggleBtn.dataset.mode = showingSecondary ? 'primary' : 'secondary';
+      };
+    }
   });
+
+  map.on('popupclose', function(e){
+    const el = e.popup.getElement();
+    const video = el && el.querySelector('.spot-video');
+    if (video){ video.pause(); }
+  });
+
+  const markerRefs = [];
+  spots.forEach(spot => {
+    const marker = L.marker([spot.lat, spot.lng], { icon: spotIcon(spot) }).addTo(map);
+    const popup = L.popup({ maxWidth: 480 }).setContent(popupHtml(spot));
+    popup._sourceSpot = spot;
+    marker.bindPopup(popup);
+    markerRefs.push({ marker, spot });
+  });
+
+  // =========================================================
+  // ---- Video menu ("Netflix" overview) + spot highlight ----
+  // =========================================================
+
+  // Group every unique video (by url) together with the spots it appears in,
+  // remembering whether it was that spot's "primary" or "secondary" media.
+  const videoGroups = new Map();
+  spots.forEach(spot => {
+    ['primary', 'secondary'].forEach(role => {
+      const media = spot[role];
+      if (!media) return;
+      if (!videoGroups.has(media.url)){
+        videoGroups.set(media.url, { type: media.type, url: media.url, entries: [] });
+      }
+      const group = videoGroups.get(media.url);
+      if (!group.entries.some(e => e.spot === spot)){
+        group.entries.push({ spot, role });
+      }
+    });
+  });
+  const videoList = Array.from(videoGroups.values())
+    .sort((a, b) => b.entries.length - a.entries.length);
+
+  function flagsFor(group){
+    const seen = new Set();
+    const flags = [];
+    group.entries.forEach(({ spot }) => {
+      if (spot.flag && !seen.has(spot.flag)){ seen.add(spot.flag); flags.push(spot.flag); }
+    });
+    return flags;
+  }
+
+  function vmTileHtml(group, index){
+    const flags = flagsFor(group).join(' ');
+    const count = group.entries.length;
+    const names = group.entries.map(e => e.spot.name);
+    const title = names.length === 1 ? names[0] : `${names[0]} +${names.length - 1} more`;
+    const thumb = group.type === 'cloudinary'
+      ? `<video class="vm-thumb-video" src="${group.url}" muted loop playsinline preload="metadata"></video>`
+      : `<div class="vm-thumb-ig"><span class="vm-ig-icon">📸</span></div>`;
+    return `
+      <div class="vm-tile" data-index="${index}">
+        <div class="vm-thumb">${thumb}</div>
+        <div class="vm-playicon">▶</div>
+        <div class="vm-flags">${flags}</div>
+        <div class="vm-info">
+          <div class="vm-count">${count} spot${count > 1 ? 's' : ''}</div>
+          <div class="vm-name">${title}</div>
+        </div>
+      </div>`;
+  }
+
+  const vmGrid = document.getElementById('vmGrid');
+  videoList.forEach((group, i) => vmGrid.insertAdjacentHTML('beforeend', vmTileHtml(group, i)));
+
+  // Country filter row inside the video menu
+  const allFlags = Array.from(new Set(spots.map(s => s.flag).filter(Boolean)));
+  const vmFilterRow = document.getElementById('vmFilterRow');
+  let activeCountryFilter = null;
+  allFlags.forEach(flag => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'vm-flag-btn';
+    btn.dataset.flag = flag;
+    btn.textContent = flag;
+    vmFilterRow.appendChild(btn);
+  });
+
+  function applyCountryFilter(){
+    document.querySelectorAll('.vm-flag-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.flag === activeCountryFilter);
+    });
+    document.querySelectorAll('.vm-tile').forEach(tile => {
+      const group = videoList[+tile.dataset.index];
+      const matches = !activeCountryFilter || group.entries.some(e => e.spot.flag === activeCountryFilter);
+      tile.style.display = matches ? '' : 'none';
+    });
+  }
+
+  // Event delegation on the row itself: this keeps working reliably no matter
+  // how many times a flag is clicked, and lets you freely switch between countries.
+  vmFilterRow.addEventListener('click', (e) => {
+    const btn = e.target.closest('.vm-flag-btn');
+    if (!btn) return;
+    const clickedFlag = btn.dataset.flag;
+    activeCountryFilter = (activeCountryFilter === clickedFlag) ? null : clickedFlag;
+    applyCountryFilter();
+  });
+
+  // Tile interactions: hover preview + click to highlight
+  document.querySelectorAll('.vm-tile').forEach(tile => {
+    const video = tile.querySelector('.vm-thumb-video');
+    if (video){
+      tile.addEventListener('mouseenter', () => video.play().catch(() => {}));
+      tile.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+    }
+    tile.addEventListener('click', () => {
+      const group = videoList[+tile.dataset.index];
+      onVideoTileClick(group);
+    });
+  });
+
+  const videoMenuOverlay = document.getElementById('videoMenuOverlay');
+  document.getElementById('videoMenuBtn').onclick = () => {
+    videoMenuOverlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+  };
+  function closeVideoMenu(){
+    videoMenuOverlay.hidden = true;
+    document.body.style.overflow = '';
+    document.querySelectorAll('.vm-thumb-video').forEach(v => { v.pause(); v.currentTime = 0; });
+  }
+  document.getElementById('vmCloseBtn').onclick = closeVideoMenu;
+
+  let highlightActive = false;
+  function highlightSpots(spotList){
+    activeFilter = null;
+    document.querySelectorAll('.icon-filter-btn').forEach(btn => btn.classList.remove('active'));
+    const spotSet = new Set(spotList);
+    markerRefs.forEach(({ marker, spot }) => {
+      const el = marker.getElement();
+      if (!el) return;
+      if (spotSet.has(spot)){
+        el.style.opacity = 1;
+        el.style.filter = 'drop-shadow(0 0 10px #C98B6E) drop-shadow(0 0 4px #C98B6E)';
+      } else {
+        el.style.opacity = 0.18;
+        el.style.filter = 'none';
+      }
+    });
+    highlightActive = true;
+    document.getElementById('highlightLabel').textContent =
+      `🎬 ${spotList.length} spot${spotList.length > 1 ? 's' : ''} from this video highlighted`;
+    document.getElementById('highlightBar').hidden = false;
+    if (spotList.length){
+      const bounds = L.latLngBounds(spotList.map(s => [s.lat, s.lng]));
+      map.fitBounds(bounds, { padding: [70, 70], maxZoom: 12 });
+    }
+  }
+
+  function clearHighlight(){
+    if (!highlightActive) return;
+    markerRefs.forEach(({ marker }) => {
+      const el = marker.getElement();
+      if (!el) return;
+      el.style.opacity = 1;
+      el.style.filter = 'none';
+    });
+    highlightActive = false;
+    document.getElementById('highlightBar').hidden = true;
+  }
+  document.getElementById('clearHighlightBtn').onclick = clearHighlight;
+
+  function onVideoTileClick(group){
+    closeVideoMenu();
+    const spotList = group.entries.map(e => e.spot);
+    highlightSpots(spotList);
+
+    // Try to open the popup for the first spot, showing the exact video that was clicked
+    const first = group.entries[0];
+    const ref = markerRefs.find(r => r.spot === first.spot);
+    if (ref){
+      setTimeout(() => {
+        ref.marker.openPopup();
+        if (first.role === 'secondary'){
+          setTimeout(() => {
+            const el = ref.marker.getPopup().getElement();
+            const toggleBtn = el && el.querySelector('.toggle-media-btn');
+            if (toggleBtn && toggleBtn.dataset.mode === 'secondary') toggleBtn.click();
+          }, 80);
+        }
+      }, 450);
+    }
+  }
 </script>
 
 </body>

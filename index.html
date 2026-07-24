@@ -26,7 +26,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<script async src="//www.instagram.com/embed.js"></script>
+<!-- Instagram's embed.js is loaded dynamically further down (with retry logic),
+     not as a static tag here — see the loadInstagramEmbedScript() function. -->
+
 <style>
   :root{
     --cream: #FBF7F0;
@@ -1181,15 +1183,52 @@
     };
   }
 
+  // Instagram's embed.js is loaded dynamically (instead of a static <script async>
+  // tag) because on this page — with Leaflet, Ko-fi's widget, and lots of images/
+  // video all competing for the connection — a plain async tag would sometimes
+  // silently never finish loading, leaving window.instgrm undefined forever with
+  // no error anywhere. Loading it ourselves lets us detect that and retry.
+  let igScriptLoadAttempts = 0;
+  function loadInstagramEmbedScript(){
+    igScriptLoadAttempts++;
+    const s = document.createElement('script');
+    s.src = 'https://www.instagram.com/embed.js';
+    s.async = true;
+    s.onload = () => {
+      // embed.js sets window.instgrm as part of its own execution; give it a
+      // brief moment in case that happens a tick after the load event.
+      let checks = 0;
+      const check = setInterval(() => {
+        checks++;
+        if (window.instgrm && window.instgrm.Embeds){
+          clearInterval(check);
+        } else if (checks > 10){
+          clearInterval(check);
+          retryIfNeeded();
+        }
+      }, 200);
+    };
+    s.onerror = retryIfNeeded;
+    document.head.appendChild(s);
+  }
+  function retryIfNeeded(){
+    if (window.instgrm && window.instgrm.Embeds) return;
+    if (igScriptLoadAttempts < 5){
+      setTimeout(loadInstagramEmbedScript, 800);
+    }
+  }
+  loadInstagramEmbedScript();
+
   function processEmbeds(attempt){
     attempt = attempt || 0;
     if (window.instgrm && window.instgrm.Embeds){
       window.instgrm.Embeds.process();
       return;
     }
-    // embed.js loads async and may not be ready yet on a slow connection —
-    // keep retrying for a few seconds instead of silently giving up.
-    if (attempt < 20){
+    // embed.js may still be (re)loading — keep retrying for a while instead
+    // of silently giving up. If it looks stuck, nudge a fresh load attempt.
+    if (attempt > 0 && attempt % 10 === 0) retryIfNeeded();
+    if (attempt < 40){
       setTimeout(() => processEmbeds(attempt + 1), 300);
     }
   }

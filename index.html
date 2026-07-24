@@ -411,6 +411,25 @@
     transform-origin:top left;
     border-radius:10px !important;
   }
+  .card .ig-embed-wrap .ig-fallback-link{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:8px 12px;
+    font-family:'Inter';
+    font-weight:600;
+    font-size:11px;
+    line-height:1.3;
+    color:#fff;
+    background:rgba(58,54,48,0.55);
+    text-decoration:none;
+    border-radius:10px;
+  }
+  .card .ig-embed-wrap .ig-fallback-link:hover{ background:rgba(58,54,48,0.7); }
+  .card .ig-embed-wrap .ig-fallback-link[hidden]{ display:none; }
   .card.stacked{ flex-direction:row; }
   .card.stacked .media{ flex:0 0 34%; width:auto; }
   .card.stacked .content{ max-height:74vh; overflow-y:auto; }
@@ -1113,6 +1132,7 @@
     const bgStyle = thumb ? ` style="background-image:url('${thumb}');background-size:cover;background-position:center;"` : "";
     return `<div class="ig-embed-wrap"${bgStyle}>
               <blockquote class="instagram-media" data-instgrm-permalink="${media.url}" data-instgrm-version="14" style="margin:0;width:100%;"></blockquote>
+              <a class="ig-fallback-link" href="${media.url}" target="_blank" rel="noopener" hidden>📸 Bekijk deze video op Instagram</a>
             </div>`;
   }
 
@@ -1161,9 +1181,16 @@
     };
   }
 
-  function processEmbeds(){
+  function processEmbeds(attempt){
+    attempt = attempt || 0;
     if (window.instgrm && window.instgrm.Embeds){
       window.instgrm.Embeds.process();
+      return;
+    }
+    // embed.js loads async and may not be ready yet on a slow connection —
+    // keep retrying for a few seconds instead of silently giving up.
+    if (attempt < 20){
+      setTimeout(() => processEmbeds(attempt + 1), 300);
     }
   }
 
@@ -1180,9 +1207,17 @@
       if (!iframe){
         attempts++;
         if (attempts < 40){ setTimeout(apply, 150); return; }
+        // Instagram never rendered anything (blocked script, blocked iframe,
+        // deleted/private post, etc.) — reveal the "view on Instagram" link
+        // instead of leaving an empty box.
+        const fallback = wrapEl.querySelector('.ig-fallback-link');
+        if (fallback) fallback.hidden = false;
         wrapEl.dataset.shrinking = '0';
         return;
       }
+      // Embed rendered successfully — make sure any earlier fallback link stays hidden.
+      const fallback = wrapEl.querySelector('.ig-fallback-link');
+      if (fallback) fallback.hidden = true;
       // give Instagram a moment to finish sizing its iframe
       setTimeout(() => {
         const naturalW = iframe.offsetWidth || iframe.getBoundingClientRect().width || 400;

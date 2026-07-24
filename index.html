@@ -1201,38 +1201,52 @@
   function shrinkInstagramEmbed(wrapEl){
     if (!wrapEl || wrapEl.dataset.shrinking === '1') return;
     wrapEl.dataset.shrinking = '1';
-    let attempts = 0;
-    function apply(){
-      const iframe = wrapEl.querySelector('iframe');
-      if (!iframe){
-        attempts++;
-        if (attempts < 40){ setTimeout(apply, 150); return; }
-        // Instagram never rendered anything (blocked script, blocked iframe,
-        // deleted/private post, etc.) — reveal the "view on Instagram" link
-        // instead of leaving an empty box.
-        const fallback = wrapEl.querySelector('.ig-fallback-link');
-        if (fallback) fallback.hidden = false;
-        wrapEl.dataset.shrinking = '0';
+    let findAttempts = 0;
+    let sizeAttempts = 0;
+
+    function giveUp(){
+      const fallback = wrapEl.querySelector('.ig-fallback-link');
+      if (fallback) fallback.hidden = false;
+      wrapEl.dataset.shrinking = '0';
+    }
+
+    function waitForSize(iframe){
+      const naturalW = iframe.offsetWidth || iframe.getBoundingClientRect().width;
+      const naturalH = iframe.offsetHeight || iframe.getBoundingClientRect().height;
+      // Instagram's app can take a couple of seconds to size its own iframe
+      // (it loads its full player bundle before doing so) — keep checking
+      // instead of giving up after one look.
+      if (!naturalW || !naturalH){
+        sizeAttempts++;
+        if (sizeAttempts < 40){ setTimeout(() => waitForSize(iframe), 200); return; }
+        giveUp();
         return;
       }
-      // Embed rendered successfully — make sure any earlier fallback link stays hidden.
       const fallback = wrapEl.querySelector('.ig-fallback-link');
       if (fallback) fallback.hidden = true;
-      // give Instagram a moment to finish sizing its iframe
-      setTimeout(() => {
-        const naturalW = iframe.offsetWidth || iframe.getBoundingClientRect().width || 400;
-        const naturalH = iframe.offsetHeight || iframe.getBoundingClientRect().height || 600;
-        if (!naturalW || !naturalH){ wrapEl.dataset.shrinking = '0'; return; }
-        const targetW = wrapEl.clientWidth || 140;
-        const targetH = window.innerHeight * 0.24;
-        const scale = Math.min(targetW / naturalW, targetH / naturalH, 1);
-        iframe.style.transform = `scale(${scale})`;
-        wrapEl.style.width = Math.round(naturalW * scale) + 'px';
-        wrapEl.style.height = Math.round(naturalH * scale) + 'px';
-        wrapEl.dataset.shrinking = '0';
-      }, 500);
+      const targetW = wrapEl.clientWidth || 140;
+      const targetH = window.innerHeight * 0.24;
+      const scale = Math.min(targetW / naturalW, targetH / naturalH, 1);
+      iframe.style.transform = `scale(${scale})`;
+      wrapEl.style.width = Math.round(naturalW * scale) + 'px';
+      wrapEl.style.height = Math.round(naturalH * scale) + 'px';
+      wrapEl.dataset.shrinking = '0';
     }
-    apply();
+
+    function findIframe(){
+      const iframe = wrapEl.querySelector('iframe');
+      if (!iframe){
+        findAttempts++;
+        if (findAttempts < 40){ setTimeout(findIframe, 150); return; }
+        // Instagram never rendered anything at all (blocked script, deleted/
+        // private post, etc.) — reveal the "view on Instagram" link instead
+        // of leaving an empty box.
+        giveUp();
+        return;
+      }
+      waitForSize(iframe);
+    }
+    findIframe();
   }
 
   function shrinkInstagramEmbedsIn(container){

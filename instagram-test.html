@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>Instagram embed test</title>
+</head>
+<body>
+  <h1>Instagram embed test</h1>
+  <p>Als hieronder een Instagram-post verschijnt, werkt de kale embed op zich prima.</p>
+
+  <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DZaeNvlNXg1/" data-instgrm-version="14" style="margin:0;width:100%;max-width:400px;"></blockquote>
+  <script async src="//www.instagram.com/embed.js"></script>
+
+  <p id="status">Status: bezig met checken...</p>
+  <script>
+    let checks = 0;
+    const statusEl = document.getElementById('status');
+    const timer = setInterval(() => {
+      checks++;
+      if (window.instgrm && window.instgrm.Embeds){
+        statusEl.textContent = 'Status: instgrm.Embeds is geladen na ' + (checks * 0.5) + ' seconden — process() wordt aangeroepen.';
+        window.instgrm.Embeds.process();
+        clearInterval(timer);
+      } else if (checks > 20){
+        statusEl.textContent = 'Status: instgrm is NIET geladen na 10 seconden.';
+        clearInterval(timer);
+      }
+    }, 500);
+  </script>
+</body>
+</html>

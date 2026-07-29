@@ -175,6 +175,16 @@
     padding:4px 14px;
     border-bottom:1px solid #ECE4D6;
   }
+  .notebar-warning{
+    flex:0 0 auto;
+    background:#FCEBD5;
+    color:#9A5B12;
+    font-weight:600;
+    font-size:10.5px;
+    text-align:center;
+    padding:4px 14px;
+    border-bottom:1px solid #ECE4D6;
+  }
 
   .map-wrap{
     position:relative;
@@ -1066,6 +1076,15 @@
   .info-cell-wide .info-btn.dm-btn{
     background:#fff; color:var(--clay);
   }
+  .info-cell-warning{
+    grid-column:1 / -1;
+    background:#FCEBD5;
+    border:1px solid #F0CFA0;
+    align-items:center;
+    text-align:center;
+  }
+  .info-cell-warning h3{ color:#9A5B12; }
+  .info-cell-warning p{ color:#8A5410; }
   .info-cell h3{
     font-family:'Fraunces', serif; font-weight:600; font-size:14px; color:var(--sage-deep);
     margin:0;
@@ -1195,6 +1214,7 @@
 </header>
 
 <div class="notebar">🌿 Respect nature and locals: Leave no trace! 🌿</div>
+<div class="notebar-warning">⚠️ Tolerated wildcamp spots: park at your own risk ⚠️</div>
 </div>
 
 <div class="map-wrap">
@@ -1274,6 +1294,10 @@
       <div class="info-cell">
         <h3>About me:</h3>
         <p>I am Manon, a Dutch full-time vanlifer traveling in my VW T4 camper 🚐. I love capturing and sharing the beauty of our world along the way 🙋</p>
+      </div>
+      <div class="info-cell info-cell-warning">
+        <h3>Important disclaimer ⚠️</h3>
+        <p>Most of these spots are tolerated wildcamping spots, not official campsites. Fines are possible: park at your own risk.</p>
       </div>
       <div class="info-cell info-cell-wide">
         <h3>Let's collaborate 🔧</h3>
@@ -2209,9 +2233,9 @@
 
   // Jumping to a spot (or group of spots) from the video list: first snap
   // back to the whole-Europe overview, then fly (animated) from there to
-  // roughly country level above the destination. Once that flight settles,
-  // the final step onto the spot itself happens instantly (no further zoom
-  // animation) and the popup/route panel opens right away.
+  // roughly country level above the destination, and stay right there —
+  // the popup/route panel opens at that same country-level zoom, with no
+  // further zoom-in step.
   function animateFromOverview(destLatLng, onArrived){
     map.stop();
     map.closePopup();
@@ -2579,7 +2603,6 @@
     const ref = markerRefs.find(r => r.spot === spot);
     if (!ref) return;
     animateFromOverview([spot.lat, spot.lng], () => {
-      map.setView([spot.lat, spot.lng], 12, { animate: false });
       revealMap();
       setTimeout(() => { ref.marker.openPopup(); }, 160);
     });

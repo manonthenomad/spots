@@ -2350,6 +2350,16 @@
     });
   }
 
+  // How far apart (in km, corner-to-corner) a multi-spot group's spots may
+  // be and still count as "regional" — close enough together to fly/zoom
+  // into as one cluster (e.g. the Wales/England spots) rather than falling
+  // back to the plain whole-Europe overview (e.g. a compilation whose spots
+  // are scattered across several countries).
+  const REGIONAL_GROUP_MAX_KM = 400;
+  function boundsSpanKm(bounds){
+    return map.distance(bounds.getSouthWest(), bounds.getNorthEast()) / 1000;
+  }
+
   let highlightActive = false;
   let routeLine = null;
   function highlightSpots(spotList, opts){
@@ -2385,15 +2395,31 @@
       `🎬📍 ${spotList.length} spot${spotList.length > 1 ? 's' : ''} highlighted`;
     document.getElementById('highlightBar').hidden = false;
     if (moveMap && spotList.length){
-      // Multiple spots from one video can be spread across the whole
-      // continent, so fitting to just their bounds could zoom in on an
-      // arbitrary midpoint (e.g. landing on France for a NL+PT pair). Just
-      // show the whole-Europe overview instead — no zoom animation needed.
       map.stop();
       map.closePopup();
-      map.setView(OVERVIEW_CENTER, OVERVIEW_ZOOM, { animate: false });
-      revealMap();
-      if (onSettled) setTimeout(onSettled, 160);
+      // Multiple spots from one video can be spread across the whole
+      // continent, so fitting to just their bounds could zoom in on an
+      // arbitrary midpoint (e.g. landing on France for a NL+PT pair). Only
+      // when the group's spots actually sit close together (e.g. all the
+      // Wales/England spots) do we fly/zoom in on them, the same way a
+      // single spot is opened — snap back to the whole-Europe overview,
+      // then fly in and fit the whole cluster in view.
+      const bounds = spotList.length > 1 ? L.latLngBounds(spotList.map(s => [s.lat, s.lng])) : null;
+      const isRegional = bounds && boundsSpanKm(bounds) <= REGIONAL_GROUP_MAX_KM;
+      if (isRegional){
+        map.setView(OVERVIEW_CENTER, OVERVIEW_ZOOM, { animate: false });
+        map.flyToBounds(bounds, { padding: [50, 50], maxZoom: 12, duration: 1.1, easeLinearity: 0.25 });
+        map.once('moveend', () => {
+          revealMap();
+          if (onSettled) setTimeout(onSettled, 160);
+        });
+      } else {
+        // Spread across the continent — just show the whole-Europe
+        // overview instead, no zoom animation needed.
+        map.setView(OVERVIEW_CENTER, OVERVIEW_ZOOM, { animate: false });
+        revealMap();
+        if (onSettled) setTimeout(onSettled, 160);
+      }
     } else if (onSettled){
       onSettled();
     }
@@ -2714,6 +2740,35 @@
     openRoutePanel(group);
     highlightSpots(spotList, { onSettled: () => { routePanel.hidden = false; } });
   }
+
+  // =========================================================
+  // ---- Deep link: ?video=<slug> in the URL ----
+  // Lets us share a link that opens the map, waits for the intro overview
+  // + pin drop-in to settle (so every spot has been seen at least once),
+  // then automatically does the exact same "open this video" flow as
+  // tapping its tile in the video menu — zoom/fit onto its spots (or the
+  // whole-Europe overview, for spread-out groups) and open its panel.
+  // Add a new slug here any time a new shareable link is needed; the value
+  // just needs to be a snippet unique to that video's URL.
+  // =========================================================
+  const VIDEO_DEEP_LINK_SLUGS = {
+    'wales': 'u2ucf9',                       // England/Wales trip compilation
+    'compilation': 'Campspots-Compilation-01',
+    'portugal-swimspots': 'PT_Swimspots',
+    'spain-swimspots': 'SP_Swimspots',
+    'millau': 'FR_Millau'
+  };
+  (function(){
+    const slug = new URLSearchParams(window.location.search).get('video');
+    if (!slug) return;
+    const urlKey = VIDEO_DEEP_LINK_SLUGS[slug];
+    if (!urlKey) return;
+    const group = videoList.find(g => g.url.includes(urlKey));
+    if (!group) return;
+    // Same beat as the "i" info-button bounce below: 2200ms splash hold +
+    // 1.6s intro flyTo + the staggered pin drop-ins landing shortly after.
+    setTimeout(() => { onVideoTileClick(group); }, 5400);
+  })();
 </script>
 
 <!-- ===== GoatCounter analytics (free, privacy-friendly) ===== -->

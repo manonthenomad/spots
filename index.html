@@ -756,6 +756,34 @@
   }
   .highlight-bar button:hover{ background:rgba(255,255,255,0.32); }
 
+  /* --- "New Unlocked" banner: shown once for special deep-link spots --- */
+  .unlock-banner{
+    position:fixed; left:50%; top:22%; transform:translate(-50%,-40%) scale(0.7);
+    z-index:9999; pointer-events:none;
+    display:flex; align-items:center; gap:10px;
+    background:linear-gradient(135deg, var(--clay), var(--sage-deep));
+    color:#fff; font-family:'Fraunces', serif; font-weight:600; font-size:19px;
+    letter-spacing:0.5px; padding:14px 26px; border-radius:999px;
+    box-shadow:0 14px 34px rgba(58,54,48,0.35), 0 0 0 1px rgba(255,255,255,0.25) inset;
+    opacity:0; transition:opacity .45s ease, transform .45s cubic-bezier(.2,1.4,.4,1);
+  }
+  .unlock-banner.unlock-show{ opacity:1; transform:translate(-50%,-40%) scale(1); }
+  .unlock-banner.unlock-hide{ opacity:0; transform:translate(-50%,-40%) scale(0.85); }
+  .unlock-text{ position:relative; z-index:1; }
+  .unlock-star{
+    position:absolute; font-size:15px; opacity:0; animation:unlock-twinkle 1.6s ease-in-out infinite;
+  }
+  .unlock-star-1{ top:-10px; left:8%; animation-delay:.15s; }
+  .unlock-star-2{ bottom:-12px; right:14%; font-size:12px; animation-delay:.55s; }
+  .unlock-star-3{ top:-6px; right:6%; font-size:18px; animation-delay:.95s; }
+  .unlock-star-4{ bottom:-10px; left:20%; font-size:11px; animation-delay:1.3s; }
+  @keyframes unlock-twinkle{
+    0%{ opacity:0; transform:scale(0.4) rotate(0deg); }
+    35%{ opacity:1; transform:scale(1.15) rotate(20deg); }
+    70%{ opacity:0.8; transform:scale(0.9) rotate(-10deg); }
+    100%{ opacity:0; transform:scale(0.4) rotate(0deg); }
+  }
+
   /* --- Route panel: shown on the map after picking a video from the menu --- */
   .route-panel{
     position:fixed; inset:0; z-index:2500;
@@ -1404,16 +1432,25 @@
     {
       name: "England",
       coords: [
-        [50.04,-5.71],[49.96,-5.20],[50.37,-4.14],[50.22,-3.64],[50.35,-3.55],
-        [50.52,-2.46],[50.57,-1.30],[50.72,-0.77],[50.74,0.27],[51.13,1.34],
-        [51.37,1.45],[51.95,1.35],[52.48,1.76],[52.61,1.73],[52.75,1.55],
-        [52.93,1.31],[52.95,0.85],[52.93,0.15],[53.14,0.34],
-        [53.58,0.02],[54.12,-0.08],[54.49,-0.61],[54.90,-1.35],[55.02,-1.42],
-        [55.77,-2.00],[55.28,-2.56],[55.00,-3.05],[54.90,-3.35],[54.51,-3.60],
-        [54.11,-3.23],[53.82,-3.06],[53.45,-3.02],
-        [53.05,-2.95],[52.60,-3.00],[52.10,-2.95],[51.75,-2.75],
-        [51.65,-2.68],[51.50,-2.65],[51.35,-2.98],[51.20,-3.48],[51.05,-4.15],
-        [50.83,-4.55],[50.42,-5.09],[50.21,-5.48],[50.04,-5.71]
+        [
+          [50.04,-5.71],[49.96,-5.20],[50.37,-4.14],[50.22,-3.64],[50.35,-3.55],
+          [50.52,-2.46],[50.57,-1.30],[50.72,-0.77],[50.74,0.27],[51.13,1.34],
+          [51.37,1.45],[51.95,1.35],[52.48,1.76],[52.61,1.73],[52.75,1.55],
+          [52.93,1.31],[52.95,0.85],[52.93,0.15],[53.14,0.34],
+          [53.58,0.02],[54.12,-0.08],[54.49,-0.61],[54.90,-1.35],[55.02,-1.42],
+          [55.77,-2.00],[55.28,-2.56],[55.00,-3.05],[54.90,-3.35],[54.51,-3.60],
+          [54.11,-3.23],[53.82,-3.06],[53.45,-3.02],
+          [53.05,-2.95],[52.60,-3.00],[52.10,-2.95],[51.75,-2.75],
+          [51.65,-2.68],[51.50,-2.65],[51.35,-2.98],[51.20,-3.48],[51.05,-4.15],
+          [50.83,-4.55],[50.42,-5.09],[50.21,-5.48],[50.04,-5.71]
+        ],
+        // hole: South Devon coast carved out, roughly Plymouth to Exeter via
+        // Dartmouth, since that whole stretch is already covered
+        [
+          [50.37,-4.14],[50.33,-4.10],[50.24,-3.83],[50.21,-3.65],
+          [50.35,-3.57],[50.40,-3.51],[50.46,-3.51],[50.60,-3.42],
+          [50.72,-3.53],[50.78,-3.70],[50.60,-3.95],[50.37,-4.14]
+        ]
       ]
     },
     {
@@ -1759,6 +1796,24 @@
       mapsUrl: "https://maps.app.goo.gl/RF1LvW96VgMyuwJ27?g_st=ac",
       primary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/v1786634171/VID_20260813_081114_788_bsl_pffag8.mp4" },
       secondary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/v1786637724/VID_20260813_083946_254_bsl_u2ucf9.mp4", igUrl: "https://www.instagram.com/reel/Db_QQMoNNkB/" }
+    },
+    {
+      name: "Dartmouth, Harbour",
+      flag: "🇬🇧", tags: ["🌊","🏙️","🚻"],
+      lat: 50.3513056, lng: -3.5781667,
+      info: "An absolutely stunning, magical harbour spot right by the water! Enjoy free overnight parking from 6 PM until 8 AM, plus 1 additional free hour so you can easily stay until 9 AM (or move down the street for another 2 free hours). Public toilets are available on-site, and there's even a ferry that takes your camper across the water for a small fee! For more free parking, go to the Castle spot. Note: In central part, people might walk by.",
+      mapsUrl: "https://maps.app.goo.gl/Tw2h4LggiCbf4qz48",
+      primary: null,
+      secondary: null
+    },
+    {
+      name: "Dartmouth, Castle",
+      flag: "🇬🇧", tags: ["🌊","🏊","🌿","🚻","🚰"],
+      lat: 50.3417778, lng: -3.5667222,
+      info: "While parking directly at the castle requires payment, taking the path just above it leads to a free parking lane! You can easily walk down the stairs to the castle, where you'll find stunning views, 24/7 public toilets, a water tap and in high season a café with ice cream. Stunning swimming coves just along the path, or take a stroll along the scenic trail to the very end corner for spectacular coastal views. Note: The road to get up here is a bit tricky. Sharp corner at the start and a bumpy, steep drive up.",
+      mapsUrl: "https://maps.app.goo.gl/2RLeN1qsDD9hz65x9",
+      primary: null,
+      secondary: null
     }
   ];
   document.getElementById('spot-count').textContent = spots.length;
@@ -2768,6 +2823,66 @@
     // Same beat as the "i" info-button bounce below: 2200ms splash hold +
     // 1.6s intro flyTo + the staggered pin drop-ins landing shortly after.
     setTimeout(() => { onVideoTileClick(group); }, 5400);
+  })();
+
+  // =========================================================
+  // ---- Deep link: ?unlock=<key> ----
+  // A "you found something exclusive" link: after the normal intro settles
+  // (same 5400ms beat as the ?video= deep link above), flies from the
+  // whole-Europe overview to the destination country first, then zooms in
+  // further so the given spots are clearly framed, highlights them (glow +
+  // connecting line, same visual as picking a video group) and shows a
+  // celebratory "New Unlocked" sparkle banner — so it feels like opening
+  // this specific link is what revealed the spots.
+  // Add a new key here any time a new "unlock" link is needed; spotNames
+  // must match the spots' `name` fields exactly.
+  // =========================================================
+  const UNLOCK_DEEP_LINKS = {
+    dartmouth: { spotNames: ['Dartmouth, Harbour', 'Dartmouth, Castle'], zoom: 15 }
+  };
+  function showUnlockedBanner(){
+    const banner = document.createElement('div');
+    banner.className = 'unlock-banner';
+    banner.innerHTML = `
+      <span class="unlock-star unlock-star-1">✨</span>
+      <span class="unlock-star unlock-star-2">✨</span>
+      <span class="unlock-star unlock-star-3">✨</span>
+      <span class="unlock-star unlock-star-4">✨</span>
+      <span class="unlock-text">★ New Unlocked ★</span>`;
+    document.body.appendChild(banner);
+    requestAnimationFrame(() => requestAnimationFrame(() => banner.classList.add('unlock-show')));
+    setTimeout(() => {
+      banner.classList.remove('unlock-show');
+      banner.classList.add('unlock-hide');
+      setTimeout(() => banner.remove(), 500);
+    }, 3200);
+  }
+  (function(){
+    const unlockKey = new URLSearchParams(window.location.search).get('unlock');
+    if (!unlockKey) return;
+    const config = UNLOCK_DEEP_LINKS[unlockKey];
+    if (!config) return;
+    const spotList = config.spotNames.map(n => spots.find(s => s.name === n)).filter(Boolean);
+    if (!spotList.length) return;
+    // Same beat as the ?video= deep link: 2200ms splash hold + 1.6s intro
+    // flyTo + the staggered pin drop-ins landing shortly after.
+    setTimeout(() => {
+      map.stop();
+      map.closePopup();
+      map.setView(OVERVIEW_CENTER, OVERVIEW_ZOOM, { animate: false });
+      // Step 1: fly from the Europe overview to the destination country.
+      map.flyTo([spotList[0].lat, spotList[0].lng], COUNTRY_ZOOM, { duration: 1.1, easeLinearity: 0.25 });
+      map.once('moveend', () => {
+        // Step 2: zoom in further so the specific spots are clearly framed.
+        const bounds = L.latLngBounds(spotList.map(s => [s.lat, s.lng]));
+        map.flyToBounds(bounds, { padding: [70, 70], maxZoom: config.zoom || 14, duration: 1.3, easeLinearity: 0.25 });
+        map.once('moveend', () => {
+          revealMap();
+          highlightSpots(spotList, { moveMap: false });
+          setTimeout(showUnlockedBanner, 300);
+        });
+      });
+    }, 5400);
   })();
 </script>
 

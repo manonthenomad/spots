@@ -1371,9 +1371,10 @@
   const map = L.map('map', { scrollWheelZoom:true, attributionControl:false }).setView(INTRO_START_CENTER, INTRO_START_ZOOM);
   L.control.attribution({ prefix:false }).addTo(map);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
-    maxZoom: 18
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 19,
+    subdomains: 'abc'
   }).addTo(map);
 
   // ---- Intro splash: hold on the "loading" card for a beat, then fade it

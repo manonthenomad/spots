@@ -2067,20 +2067,20 @@
   // payment, no subscription. See notes on the two constants below.
   // =========================================================
 
-  // TODO Manon: replace this with your real Mollie payment link.
-  const MOLLIE_PAYMENT_URL = "https://www.mollie.com/payments/REPLACE_ME";
+  // Manon's real Stripe payment link.
+  const STRIPE_PAYMENT_URL = "https://buy.stripe.com/fZu5kF0nKfez4ng0Z900000";
 
-  // TODO Manon: in Mollie, set this payment's "redirect URL after payment"
-  // to:   https://spots.manonstop.nl/?access=CAMPSPOTSUNLOCK
+  // TODO Manon: in Stripe, set this payment link's "After payment" redirect
+  // to a custom URL:   https://spots.manonstop.nl/?access=CAMPSPOTSUNLOCK
   // (must match UNLOCK_CODE below exactly, case doesn't matter). Anyone who
   // completes payment lands back on the site already unlocked. You can
-  // also hand this same code out manually (e.g. by DM) — the "Already
+  // also hand this same code out manually (e.g. by DM), the "Already
   // paid?" box in the unlock popup accepts it too, for anyone switching
   // devices or who cleared their browser data.
   const UNLOCK_CODE = "CAMPSPOTSUNLOCK";
 
   // A second, separate code for handing out free full access manually (e.g.
-  // to family) without touching Stripe at all — same effect as paying, but
+  // to family) without touching Stripe at all, same effect as paying, but
   // its own code so it can be shared/changed independently of the real
   // payment code. Link format: https://spots.manonstop.nl/?access=CAMPSPOTSFAMILY
   const GIFT_CODE = "CAMPSPOTSFAMILY";
@@ -2174,7 +2174,7 @@
     return [spot.lat + dLat, spot.lng + dLng];
   }
 
-  // If Mollie (or a manual link) redirected back here with ?access=<code>,
+  // If Stripe (or a manual link) redirected back here with ?access=<code>,
   // unlock immediately and strip the code from the visible URL.
   (function(){
     const params = new URLSearchParams(window.location.search);
@@ -2207,7 +2207,7 @@
   }
   refreshUnlockUI();
 
-  document.getElementById('unlockPayBtn').href = MOLLIE_PAYMENT_URL;
+  document.getElementById('unlockPayBtn').href = STRIPE_PAYMENT_URL;
   unlockFab.onclick = () => { unlockPanel.hidden = false; };
   document.getElementById('unlockCloseBtn').onclick = () => { unlockPanel.hidden = true; };
   unlockPanel.addEventListener('click', (e) => { if (e.target === unlockPanel) unlockPanel.hidden = true; });

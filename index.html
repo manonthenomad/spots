@@ -1522,8 +1522,8 @@
   <div class="unlock-card">
     <button type="button" id="unlockCloseBtn" class="unlock-close" aria-label="Close">✕</button>
     <h3>🔓 Unlock all spots</h3>
-    <p>Unlock once to watch the videos and see the exact location, tips and Google Maps link for every spot on the map — forever.</p>
-    <a id="unlockPayBtn" class="unlock-pay-btn" href="#" target="_blank" rel="noopener">Unlock all spots — €8,99</a>
+    <p>Every hidden spot. Video, info, exact location. One-time €8,99 unlocks it all. It keeps me on the road finding new ones, and keeps the best-kept secrets just a little more secret.</p>
+    <a id="unlockPayBtn" class="unlock-pay-btn" href="#" target="_blank" rel="noopener">Unlock all spots for €8,99</a>
     <div class="unlock-divider">Have a code?</div>
     <div class="unlock-code-row">
       <input type="text" id="unlockCodeInput" class="unlock-code-input" placeholder="Enter your unlock code">
@@ -2110,6 +2110,13 @@
     switzerland: { spotNames: ['Jurapark Aargau'], zoom: 15 },
     wales: { spotNames: ['Black Rock Sands', 'Snowdonia Viewpoint'], zoom: 13 }
   };
+  // Spots already showcased per category/video (the entries above) are the
+  // free examples: always visible/unlocked for every visitor, no link or
+  // code needed. Built straight from UNLOCK_DEEP_LINKS so a spot only needs
+  // to be listed once.
+  const FREE_PREVIEW_SPOT_NAMES = new Set(
+    Object.values(UNLOCK_DEEP_LINKS).flatMap(cfg => cfg.spotNames)
+  );
   const UNLOCKED_SPOTS_KEY = "spotsUnlockedList";
   const unlockedSpotSet = (function(){
     let list = [];
@@ -2129,6 +2136,7 @@
   }
   function isLocked(spot){
     if (isUnlockedAll()) return false;
+    if (FREE_PREVIEW_SPOT_NAMES.has(spot.name)) return false;
     return !unlockedSpotSet.has(spot.name);
   }
   function lockedName(spot){

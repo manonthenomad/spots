@@ -424,6 +424,16 @@
   }
   .card .media-slot{position:relative;}
   .card .video-wrap{position:relative;}
+  /* Locked spot: grey, see-through cover with a padlock over the video. */
+  .card .media-lock-wrap{position:relative;}
+  .card .media-lock-overlay{
+    position:absolute; inset:0; z-index:5; border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:44px; line-height:1;
+    background:rgba(128,128,128,0.5);
+    -webkit-backdrop-filter:grayscale(1) blur(2px); backdrop-filter:grayscale(1) blur(2px);
+    cursor:default;
+  }
   .card video{
     width:100%;
     aspect-ratio:9/16;
@@ -734,6 +744,15 @@
     background:linear-gradient(to top, rgba(0,0,0,0.88), rgba(0,0,0,0));
     padding:22px 8px 8px; color:#fff;
     z-index:3;
+  }
+  /* Locked video (every spot in it is still locked): grey, see-through
+     thumbnail with a padlock on top, same look as the locked map pins. */
+  .vm-tile.vm-locked{ background:#8a8a8a; }
+  .vm-tile.vm-locked .vm-thumb{ filter:grayscale(1); opacity:.42; }
+  .vm-lock{
+    position:absolute; inset:0; z-index:3; pointer-events:none;
+    display:flex; align-items:center; justify-content:center;
+    font-size:32px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4));
   }
   .vm-count{ font-size:10px; font-weight:700; color:var(--dustyrose); letter-spacing:0.4px; }
   .vm-name{ font-size:11px; font-weight:600; line-height:1.25; margin-top:2px; }
@@ -1233,16 +1252,29 @@
     100%{ opacity:1; transform:translateY(0); }
   }
 
-  /* --- Paywall: locked-spot badge, locked popup content, unlock button + modal --- */
-  .pin-lock{
-    position:absolute; bottom:2px; right:2px; font-size:11px; line-height:1;
-    filter:drop-shadow(0 1px 1px rgba(0,0,0,0.45));
-  }
-  .pin-locator-wrap.pin-locked,
+  /* --- Paywall: locked-spot fog marker, locked popup content, unlock button + modal --- */
+  /* Locked spot: same vertical "video screen" as an open spot, but grey,
+     see-through and slightly blurred, with a padlock on top. The real
+     position is never shown: the screen sits on a nudged location and a
+     soft geographic circle (see LOCKED_AREA_RADIUS_M) grows with the zoom
+     level, so zooming in only makes the area bigger and vaguer. */
   .pin-screen.pin-locked{
-    opacity:0.55;
-    filter:grayscale(1);
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(128,128,128,0.42);
+    border:2px solid rgba(255,255,255,0.65);
+    box-shadow:0 3px 9px rgba(58,54,48,0.22);
+    -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
   }
+  .pin-screen.pin-locked .pin-lock{
+    font-size:17px; line-height:1;
+    filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4));
+  }
+  .pin-screen.pin-locked .pin-flag{ top:3px; left:3px; }
+  .locked-area{
+    animation:lockedAreaIn .8s ease backwards;
+    transition:opacity .25s ease;
+  }
+  @keyframes lockedAreaIn{ from{ opacity:0; } to{ opacity:1; } }
   .locked-title{
     font-family:'Fraunces', serif; font-weight:500; font-size:16px; color:var(--ink-soft);
     margin:0 0 4px;
@@ -1261,7 +1293,7 @@
   .unlock-cta-btn:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(58,54,48,0.24); }
 
   .unlock-fab{
-    position:absolute; top:14px; left:14px; z-index:1000;
+    position:absolute; top:14px; left:50%; transform:translateX(-50%); z-index:1000;
     display:inline-flex; align-items:center; gap:6px;
     background:var(--clay); color:#fff;
     font-family:'Inter', sans-serif; font-weight:700; font-size:11.5px;
@@ -1269,7 +1301,7 @@
     box-shadow:0 6px 16px rgba(58,54,48,0.4), 0 2px 6px rgba(58,54,48,0.3);
     transition:transform 0.15s ease;
   }
-  .unlock-fab:hover{ transform:translateY(-1px); }
+  .unlock-fab:hover{ transform:translateX(-50%) translateY(-1px); }
   .unlock-fab[hidden]{ display:none !important; }
 
   .unlock-panel{
@@ -1490,7 +1522,7 @@
   <div class="unlock-card">
     <button type="button" id="unlockCloseBtn" class="unlock-close" aria-label="Close">✕</button>
     <h3>🔓 Unlock all spots</h3>
-    <p>You can watch every video for free. Unlock once to see the exact location, tips and Google Maps link for every spot on the map — forever.</p>
+    <p>Unlock once to watch the videos and see the exact location, tips and Google Maps link for every spot on the map — forever.</p>
     <a id="unlockPayBtn" class="unlock-pay-btn" href="#" target="_blank" rel="noopener">Unlock all spots — €8,99</a>
     <div class="unlock-divider">Have a code?</div>
     <div class="unlock-code-row">
@@ -1970,12 +2002,66 @@
       mapsUrl: "https://maps.app.goo.gl/2RLeN1qsDD9hz65x9",
       primary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/v1787238652/UK_Dartmouth_xls4lr.mp4", igUrl: "https://www.instagram.com/p/DcRZfETNxbC/" },
       secondary: null
+    },
+    {
+      name: "Viewpoint Sterzing / Vipiteno",
+      flag: "🇮🇹", tags: ["🏔️"],
+      lat: 46.860347, lng: 11.471133,
+      info: "Tricky, small. But wow the view is really exceptional. Sooo stunning to see the whole valley and the town. Note: small vans only! Tricky spot, be careful. Tight space, 2 vans will just fit next to each other.",
+      mapsUrl: "https://maps.app.goo.gl/mZc7Koroz6XvFdbM8",
+      primary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/f_auto,q_auto/v1790326235/IT-Viewpoint_badl2j.mp4" },
+      secondary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/f_auto,q_auto/v1790326221/IT-Dolomites-Falzarego-Sunset-View_21-september_hg3cmf.mp4", igUrl: "https://www.instagram.com/p/DdlAXPbN-zJ/" }
+    },
+    {
+      name: "Falzarego Pass, spot 1",
+      flag: "🇮🇹", tags: ["🏔️"],
+      lat: 46.5291101, lng: 11.9897137,
+      info: "On this spot you have the best sunset view ever. The other spot close by is better with sunrise and hikes. Absolutely crazy that sleeping in your camper is allowed on such an incredibly beautiful spot, on probably one of the most stunning roads in the world. Note: No 'camping' allowed, which means: no chairs & tables + no rooftop-tent open!, €50-€150 fine if you do, and they check daily. It is a popular spot, you will have neighbours.",
+      mapsUrl: "https://maps.app.goo.gl/N4ghXb6hvR2mcQ2c8",
+      primary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/f_auto,q_auto/v1790326221/IT-Dolomites-Falzarego-Sunset-View_21-september_hg3cmf.mp4", igUrl: "https://www.instagram.com/p/DdlAXPbN-zJ/" },
+      secondary: null
+    },
+    {
+      name: "Falzarego Pass, spot 2",
+      flag: "🇮🇹", tags: ["🏔️"],
+      lat: 46.5186329, lng: 12.0095719,
+      info: "On this spot you have the lovely sunrise and direct start of hiketrails. The other spot close by is better for sunset view. Absolutely crazy that sleeping in your camper is allowed on such an incredibly beautiful spot, on probably one of the most stunning roads in the world. Note: No 'camping' allowed, which means: no chairs & tables + no rooftop-tent open!, €50-€150 fine if you do, and they check daily. It is a popular spot, you will have neighbours.",
+      mapsUrl: "https://maps.app.goo.gl/drUMdnKNy3hSBtzi9",
+      primary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/v1790328270/IT-Dolomites-Sunrise-hike_SMALL_bewrin.mp4" },
+      secondary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/f_auto,q_auto/v1790326221/IT-Dolomites-Falzarego-Sunset-View_21-september_hg3cmf.mp4", igUrl: "https://www.instagram.com/p/DdlAXPbN-zJ/" }
+    },
+    {
+      name: "Hike, Sorapis Lake + UP",
+      flag: "🇮🇹", tags: ["🏔️"],
+      lat: 46.5510625, lng: 12.189373,
+      info: "A huge parking, from where you can easily sleep and wake up the next morning to hike. During the day it will get busy. An amazing hike, the famous hike to the lake of Sorapis, which is stunning, but can be a bit crowded. Like a challenge? After the lake, take the route UP! Some hard parts, but soooo worth it. Mindblowing views. You'll reach 2307m, we did it in 6 hrs. Take enough water with you! Note: There is a hill to an extra level, only go up with 4x4. No 'camping' allowed, which means: no chairs & tables + no rooftop-tent open!, €50-€150 fine if you do, and they check daily. It is a popular spot, you will have neighbours.",
+      mapsUrl: "https://maps.app.goo.gl/HGnbNco4U2kRUWeY6",
+      primary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/v1790329733/IT_Dolomites-Hike-Sorapis_SMALL_jcf5ug.mp4" },
+      secondary: null
+    },
+    {
+      name: "Camper-picnic-parking",
+      flag: "🇮🇹", tags: ["🏔️","🚰","🔥"],
+      lat: 46.4812476, lng: 12.4565227,
+      info: "Mindblowing that this cute village provides a picnic area + free camper parking + BBQ-grill, watertap, picnic tables, trashbins, and on top of the hill: amazing view. Note: The church rings at 20:00 in the evening and 07:00 in the morning. Popular spot, you will have neighbours. There are more of these kind of parkings in this area.",
+      mapsUrl: "https://maps.app.goo.gl/GCc3qkGxq9EwSXY36",
+      primary: null,
+      secondary: null
+    },
+    {
+      name: "Hidden by the Stream",
+      flag: "🇮🇹", tags: ["🏔️","🌲"],
+      lat: 46.261754, lng: 13.254023,
+      info: "Amazing beautiful hidden spot, with bright blue water stream. Surrounded by mountains and nature. Little paradise. Note: In summer (apparently) locals swim here, then be careful for robbers. Signs say: Not allowed to drive over the river. No campfires.",
+      mapsUrl: "https://maps.app.goo.gl/HM2chnbCGWdAxzBD8",
+      primary: null,
+      secondary: null
     }
   ];
   document.getElementById('spot-count').textContent = spots.length;
 
   // =========================================================
-  // ---- Paywall: one free spot per country, rest locked ----
+  // ---- Paywall: every spot locked, unlocked per spot via ?unlock=<key> ----
   // Video always stays visible (see popupHtml) — only the exact name,
   // info text and Google Maps link are hidden until unlocked. One-time
   // payment, no subscription. See notes on the two constants below.
@@ -2000,14 +2086,42 @@
   const GIFT_CODE = "CAMPSPOTSFAMILY";
   const UNLOCK_STORAGE_KEY = "spotsUnlockedAll";
 
-  // The first spot (in array order) for each flag/country stays free.
-  const FREE_SPOT_NAMES = (function(){
-    const seen = new Set();
-    const free = [];
-    spots.forEach(s => {
-      if (s.flag && !seen.has(s.flag)){ seen.add(s.flag); free.push(s.name); }
-    });
-    return free;
+  // Every spot is locked by default. A spot only opens up when:
+  //   (a) the visitor unlocked everything (payment / gift code), or
+  //   (b) they opened a special per-spot link: https://spots.manonstop.nl/?unlock=<key>
+  //       (keys are listed in UNLOCK_DEEP_LINKS below). Only the spots named
+  //       in that entry unlock; the rest stay locked. Those spots are
+  //       remembered in this browser, so a visitor who follows several
+  //       Instagram links gradually collects them.
+  // Add a new key here for every spot you post on Instagram; spotNames must
+  // match the spots' `name` fields exactly. `zoom` is how far the map zooms
+  // in on the spot(s) when the link is opened.
+  const UNLOCK_DEEP_LINKS = {
+    dartmouth: { spotNames: ['Dartmouth, Harbour', 'Dartmouth, Castle'], zoom: 15 },
+    falzarego1: { spotNames: ['Falzarego Pass, spot 1'], zoom: 15 },
+    sorapis: { spotNames: ['Hike, Sorapis Lake + UP'], zoom: 15 },
+    drenthe: { spotNames: ['Drenthe, Grote Rietplas Oost'], zoom: 15 },
+    hoegne: { spotNames: ['La Hoëgne Valley, Promenade de la Hoëgne'], zoom: 15 },
+    casablanca: { spotNames: ['Platja Casablanca'], zoom: 15 },
+    millau: { spotNames: ['Millau'], zoom: 15 },
+    compilation: { spotNames: ['Drenthe, Grote Rietplas Oost', 'Elorriaga'], zoom: 9 },
+    'pt-swimspots': { spotNames: ['Zona de Lazer da Volta da Lomba'], zoom: 15 },
+    'sp-swimspots': { spotNames: ['Lake Embalse De Santa Teresa'], zoom: 15 },
+    switzerland: { spotNames: ['Jurapark Aargau'], zoom: 15 },
+    wales: { spotNames: ['Black Rock Sands', 'Snowdonia Viewpoint'], zoom: 13 }
+  };
+  const UNLOCKED_SPOTS_KEY = "spotsUnlockedList";
+  const unlockedSpotSet = (function(){
+    let list = [];
+    try { list = JSON.parse(localStorage.getItem(UNLOCKED_SPOTS_KEY) || '[]'); } catch (e) { list = []; }
+    if (!Array.isArray(list)) list = [];
+    const key = new URLSearchParams(window.location.search).get('unlock');
+    const cfg = key && Object.prototype.hasOwnProperty.call(UNLOCK_DEEP_LINKS, key) ? UNLOCK_DEEP_LINKS[key] : null;
+    if (cfg){
+      cfg.spotNames.forEach(n => { if (!list.includes(n)) list.push(n); });
+      try { localStorage.setItem(UNLOCKED_SPOTS_KEY, JSON.stringify(list)); } catch (e) {}
+    }
+    return new Set(list);
   })();
 
   function isUnlockedAll(){
@@ -2015,14 +2129,41 @@
   }
   function isLocked(spot){
     if (isUnlockedAll()) return false;
-    if (!spot.flag) return false; // no country tagged — leave it open
-    return !FREE_SPOT_NAMES.includes(spot.name);
+    return !unlockedSpotSet.has(spot.name);
   }
   function lockedName(spot){
     return isLocked(spot) ? '🔒 Locked spot' : spot.name;
   }
   function unlockAll(){
     localStorage.setItem(UNLOCK_STORAGE_KEY, '1');
+  }
+
+  // --- Fuzzing locked spots on the map ---
+  // A locked pin must never let someone pinpoint the real spot just by
+  // zooming in. So for locked spots we (a) nudge the marker's displayed
+  // coordinates by a random-but-consistent 400-900m in a random direction
+  // (seeded off the spot name, so it doesn't jump around between visits/
+  // reloads), and (b) render it as a soft, deliberately-oversized "fog"
+  // blob instead of the precise pin shape, so it reads as "somewhere in
+  // this area" rather than an exact point.
+  function seededRandom01(str){
+    let h = 0;
+    for (let i = 0; i < str.length; i++){ h = (h * 31 + str.charCodeAt(i)) | 0; }
+    // two independent-ish values from the same hash
+    const a = Math.abs(Math.sin(h) * 10000) % 1;
+    const b = Math.abs(Math.sin(h + 1) * 10000) % 1;
+    return [a, b];
+  }
+  // Radius (metres) of the grey area drawn around a locked spot. Larger than
+  // the max nudge (900m) so the real spot always lies somewhere inside it.
+  const LOCKED_AREA_RADIUS_M = 1300;
+  function fuzzedCoords(spot){
+    const [r1, r2] = seededRandom01(spot.name || `${spot.lat},${spot.lng}`);
+    const distanceKm = 0.4 + r1 * 0.5; // 400m - 900m
+    const angle = r2 * Math.PI * 2;
+    const dLat = (distanceKm / 111) * Math.cos(angle);
+    const dLng = (distanceKm / (111 * Math.cos(spot.lat * Math.PI / 180))) * Math.sin(angle);
+    return [spot.lat + dLat, spot.lng + dLng];
   }
 
   // If Mollie (or a manual link) redirected back here with ?access=<code>,
@@ -2145,18 +2286,22 @@
   function applyFilter(icon){
     if (typeof clearHighlight === 'function') clearHighlight();
     activeFilter = (activeFilter === icon) ? null : icon;
-    markerRefs.forEach(({ marker, spot }) => {
+    markerRefs.forEach(({ marker, spot, circle }) => {
       const el = marker.getElement();
       if (!el) return;
+      const cEl = circle && circle.getElement();
       if (!activeFilter){
         el.style.opacity = 1;
         el.style.filter = 'none';
+        if (cEl) cEl.style.opacity = 1;
       } else if (spot.tags.includes(activeFilter)){
         el.style.opacity = 1;
         el.style.filter = 'drop-shadow(0 0 7px #C98B6E)';
+        if (cEl) cEl.style.opacity = 1;
       } else {
         el.style.opacity = 0.25;
         el.style.filter = 'none';
+        if (cEl) cEl.style.opacity = 0.2;
       }
     });
     document.querySelectorAll('.icon-filter-btn').forEach(btn => {
@@ -2184,10 +2329,27 @@
   function spotIcon(spot, dropIndex){
     const media = spot.primary;
     const flagBadge = spot.flag ? `<span class="pin-flag">${spot.flag}</span>` : '';
-    const lockBadge = isLocked(spot) ? `<span class="pin-lock">🔒</span>` : '';
-    const lockedClass = isLocked(spot) ? ' pin-locked' : '';
     const dropDelay = PIN_DROP_BASE_DELAY + (dropIndex || 0) * PIN_DROP_STAGGER;
     const dropStyle = ` style="animation-delay:${dropDelay}ms"`;
+
+    if (isLocked(spot)){
+      // Same little vertical "screen" as an open spot, but grey + see-through
+      // with a padlock, and no pointed tail (it marks an area, not a point).
+      // See fuzzedCoords() for the offset used when placing this marker, and
+      // the .locked-area circle added next to the marker below.
+      return L.divIcon({
+        className: 'spot-pin',
+        html: `
+          <div class="pin-drop"${dropStyle}>
+            <div class="pin-screen pin-locked">
+              <span class="pin-lock">🔒</span>
+              ${flagBadge}
+            </div>
+          </div>`,
+        iconSize: [34, 60],
+        iconAnchor: [17, 30]
+      });
+    }
 
     if (!media){
       // No video/Instagram content for this spot yet — use the same green
@@ -2197,13 +2359,12 @@
         className: 'spot-pin',
         html: `
           <div class="pin-drop"${dropStyle}>
-            <div class="pin-locator-wrap${lockedClass}">
+            <div class="pin-locator-wrap">
               <svg class="pin-locator" viewBox="0 0 64 64" width="34" height="46" xmlns="http://www.w3.org/2000/svg">
                 <path d="M32 4 C20 4 11 13 11 25 C11 40 32 60 32 60 C32 60 53 40 53 25 C53 13 44 4 32 4 Z" fill="#5C7458" stroke="#fff" stroke-width="2.5"/>
                 <circle cx="32" cy="25" r="9" fill="#FBF7F0"/>
               </svg>
               ${flagBadge}
-              ${lockBadge}
             </div>
           </div>`,
         iconSize: [34, 46],
@@ -2219,11 +2380,10 @@
       className: 'spot-pin',
       html: `
         <div class="pin-drop"${dropStyle}>
-          <div class="pin-screen${thumbUrl ? '' : ' thumb-fallback'}${lockedClass}">
+          <div class="pin-screen${thumbUrl ? '' : ' thumb-fallback'}">
             ${img}
             <span class="pin-ig-icon">📸</span>
             ${flagBadge}
-            ${lockBadge}
           </div>
           <div class="pin-tail"></div>
         </div>`,
@@ -2269,16 +2429,23 @@
            <button type="button" class="media-nav-btn media-next" aria-label="Next video">›</button>
          </div>`
       : "";
+    const slotHtml = `<div class="media-slot">${mediaHtml(spot.primary, spot.thumb)}</div>`;
+    // Locked spot: the video is greyed out with a padlock on top (the overlay
+    // also blocks tapping it; playback is skipped, see popupopen/showMedia).
+    // The overlay sits next to .media-slot, not inside it, because switching
+    // between videos rewrites the slot's contents.
     const mediaCol = spot.primary
       ? `<div class="media">
-           <div class="media-slot">${mediaHtml(spot.primary, spot.thumb)}</div>
+           ${isLocked(spot)
+             ? `<div class="media-lock-wrap">${slotHtml}<div class="media-lock-overlay" role="img" aria-label="Locked video">🔒</div></div>`
+             : slotHtml}
            ${navHtml}
          </div>`
       : "";
     const contentHtml = isLocked(spot)
       ? `<div class="tagsrow">${spot.flag || ""} ${spot.tags.join(" ")}</div>
          <h3 class="locked-title">🔒 Locked spot</h3>
-         <p class="locked-msg">Watch the video for free — the exact location, tips and Google Maps link are part of the one-time unlock.</p>
+         <p class="locked-msg">The video, exact location, tips and Google Maps link are part of the one-time unlock.</p>
          <button type="button" class="unlock-cta-btn" onclick="openUnlockPanel()">🔓 Unlock all spots</button>`
       : `<div class="tagsrow">${spot.flag || ""} ${spot.tags.join(" ")}</div>
          <h3>${spot.name}</h3>
@@ -2404,7 +2571,7 @@
     centerOpenPopupEl(el);
     const slot = el.querySelector('.media-slot');
     if (!slot) { processEmbeds(); return; }
-    if (slot.querySelector('.spot-video')) activateVideo(slot);
+    if (slot.querySelector('.spot-video') && !isLocked(spot)) activateVideo(slot);
     processEmbeds();
     shrinkInstagramEmbedsIn(el);
 
@@ -2419,7 +2586,7 @@
         idx = (newIdx + mediaList.length) % mediaList.length;
         countEl.textContent = `${idx + 1} / ${mediaList.length}`;
         slot.innerHTML = mediaHtml(mediaList[idx], idx === 0 ? spot.thumb : null);
-        if (slot.querySelector('.spot-video')) activateVideo(slot);
+        if (slot.querySelector('.spot-video') && !isLocked(spot)) activateVideo(slot);
         const igWrap = slot.querySelector('.ig-embed-wrap');
         if (igWrap){ processEmbeds(); watchInstagramEmbed(igWrap); }
       }
@@ -2436,11 +2603,26 @@
 
   const markerRefs = [];
   spots.forEach((spot, i) => {
-    const marker = L.marker([spot.lat, spot.lng], { icon: spotIcon(spot, i) }).addTo(map);
+    const coords = isLocked(spot) ? fuzzedCoords(spot) : [spot.lat, spot.lng];
+    // Locked spots also get a soft, real-world-sized circle around the
+    // (nudged) marker. It scales with the map, so zooming in never gets
+    // closer to an exact point - the area just gets bigger on screen.
+    let circle = null;
+    if (isLocked(spot)){
+      circle = L.circle(coords, {
+        radius: LOCKED_AREA_RADIUS_M,
+        color: '#7d7d7d', weight: 1.5, opacity: 0.55, dashArray: '4 7',
+        fillColor: '#8a8a8a', fillOpacity: 0.16,
+        interactive: false, className: 'locked-area'
+      }).addTo(map);
+      const circleEl = circle.getElement();
+      if (circleEl) circleEl.style.animationDelay = (PIN_DROP_BASE_DELAY + i * PIN_DROP_STAGGER) + 'ms';
+    }
+    const marker = L.marker(coords, { icon: spotIcon(spot, i) }).addTo(map);
     const popup = L.popup({ maxWidth: 380, autoPan: false }).setContent(popupHtml(spot));
     popup._sourceSpot = spot;
     marker.bindPopup(popup);
-    markerRefs.push({ marker, spot });
+    markerRefs.push({ marker, spot, circle });
   });
 
   // =========================================================
@@ -2527,9 +2709,11 @@
     const thumb = group.type === 'cloudinary'
       ? `${posterUrl ? `<img class="vm-thumb-poster" src="${posterUrl}" alt="" loading="lazy">` : ""}<video class="vm-thumb-video" data-src="${group.url}" muted loop playsinline preload="none"></video>`
       : `<div class="vm-thumb-ig"${posterUrl ? ` style="background-image:url('${posterUrl}');background-size:cover;background-position:center;"` : ""}>${posterUrl ? "" : `<span class="vm-ig-icon">📸</span>`}</div>`;
+    const allLocked = group.entries.every(e => isLocked(e.spot));
     return `
-      <div class="vm-tile" data-index="${index}">
+      <div class="vm-tile${allLocked ? ' vm-locked' : ''}" data-index="${index}">
         <div class="vm-thumb">${thumb}</div>
+        ${allLocked ? '<div class="vm-lock" aria-hidden="true">🔒</div>' : ''}
         <div class="vm-playicon">▶</div>
         <div class="vm-flags">${flags}</div>
         <div class="vm-info">
@@ -2713,20 +2897,23 @@
     activeFilter = null;
     document.querySelectorAll('.icon-filter-btn').forEach(btn => btn.classList.remove('active'));
     const spotSet = new Set(spotList);
-    markerRefs.forEach(({ marker, spot }) => {
+    markerRefs.forEach(({ marker, spot, circle }) => {
       const el = marker.getElement();
       if (!el) return;
+      const cEl = circle && circle.getElement();
       if (spotSet.has(spot)){
         el.style.opacity = 1;
         el.style.filter = 'drop-shadow(0 0 10px #C98B6E) drop-shadow(0 0 4px #C98B6E)';
+        if (cEl) cEl.style.opacity = 1;
       } else {
         el.style.opacity = 0.18;
         el.style.filter = 'none';
+        if (cEl) cEl.style.opacity = 0.15;
       }
     });
     if (routeLine){ map.removeLayer(routeLine); routeLine = null; }
     if (spotList.length > 1){
-      routeLine = L.polyline(spotList.map(s => [s.lat, s.lng]), {
+      routeLine = L.polyline(spotList.map(s => isLocked(s) ? fuzzedCoords(s) : [s.lat, s.lng]), {
         color: '#C98B6E',
         weight: 3,
         opacity: 0.85,
@@ -2748,7 +2935,7 @@
       // Wales/England spots) do we fly/zoom in on them, the same way a
       // single spot is opened — snap back to the whole-Europe overview,
       // then fly in and fit the whole cluster in view.
-      const bounds = spotList.length > 1 ? L.latLngBounds(spotList.map(s => [s.lat, s.lng])) : null;
+      const bounds = spotList.length > 1 ? L.latLngBounds(spotList.map(s => isLocked(s) ? fuzzedCoords(s) : [s.lat, s.lng])) : null;
       const isRegional = bounds && boundsSpanKm(bounds) <= REGIONAL_GROUP_MAX_KM;
       if (isRegional){
         map.setView(OVERVIEW_CENTER, OVERVIEW_ZOOM, { animate: false });
@@ -2771,11 +2958,13 @@
 
   function clearHighlight(){
     if (!highlightActive) return;
-    markerRefs.forEach(({ marker }) => {
+    markerRefs.forEach(({ marker, circle }) => {
       const el = marker.getElement();
       if (!el) return;
       el.style.opacity = 1;
       el.style.filter = 'none';
+      const cEl = circle && circle.getElement();
+      if (cEl) cEl.style.opacity = 1;
     });
     if (routeLine){ map.removeLayer(routeLine); routeLine = null; }
     highlightActive = false;
@@ -3065,7 +3254,8 @@
     closeRoutePanel();
     const ref = markerRefs.find(r => r.spot === spot);
     if (!ref) return;
-    animateFromOverview([spot.lat, spot.lng], () => {
+    const dest = isLocked(spot) ? fuzzedCoords(spot) : [spot.lat, spot.lng];
+    animateFromOverview(dest, () => {
       revealMap();
       setTimeout(() => { ref.marker.openPopup(); }, 160);
     });
@@ -3124,12 +3314,9 @@
   // connecting line, same visual as picking a video group) and shows a
   // celebratory "New Unlocked" sparkle banner — so it feels like opening
   // this specific link is what revealed the spots.
-  // Add a new key here any time a new "unlock" link is needed; spotNames
-  // must match the spots' `name` fields exactly.
+  // The keys themselves live in UNLOCK_DEEP_LINKS (paywall section above),
+  // where opening this link also unlocks those spots.
   // =========================================================
-  const UNLOCK_DEEP_LINKS = {
-    dartmouth: { spotNames: ['Dartmouth, Harbour', 'Dartmouth, Castle'], zoom: 15 }
-  };
   function showUnlockedBanner(){
     const banner = document.createElement('div');
     banner.className = 'unlock-banner';
@@ -3150,8 +3337,8 @@
   (function(){
     const unlockKey = new URLSearchParams(window.location.search).get('unlock');
     if (!unlockKey) return;
+    if (!Object.prototype.hasOwnProperty.call(UNLOCK_DEEP_LINKS, unlockKey)) return;
     const config = UNLOCK_DEEP_LINKS[unlockKey];
-    if (!config) return;
     const spotList = config.spotNames.map(n => spots.find(s => s.name === n)).filter(Boolean);
     if (!spotList.length) return;
     // Same beat as the ?video= deep link: 2200ms splash hold + 1.6s intro

@@ -2141,26 +2141,30 @@
   //       remembered in this browser, so a visitor who follows several
   //       Instagram links gradually collects them.
   // Add a new key here for every spot you post on Instagram; spotNames must
-  // match the spots' `name` fields exactly. `zoom` is now just a safety cap
-  // (never zoom in closer than this) — the actual zoom comes from fitting
-  // all framed spots in view, see getDeepLinkDisplaySpots further down.
+  // match the spots' `name` fields exactly. `zoom` is a safety cap only —
+  // never zoom in closer than this. The actual zoom comes from fitting all
+  // framed spots in view (see getDeepLinkDisplaySpots below), so a low cap
+  // here (e.g. 12) is what keeps the view zoomed out enough that several
+  // other (locked) spots stay visible around the unlocked one — that's the
+  // whole point: visitors see there's more to explore and want to unlock it.
   // Optional `nearbySpotNames`: name(s) of other (still-locked) spots to
   // frame + highlight alongside this one, e.g. to match spots shown
   // together in a specific video. Leave it out and the nearest locked
-  // spots get auto-picked so at least 3 are always shown.
+  // spots get auto-picked so at least 3 are always shown. Optional
+  // `minSpots` overrides the default minimum of 3 for this link only.
   const UNLOCK_DEEP_LINKS = {
-    dartmouth: { spotNames: ['Dartmouth, Harbour', 'Dartmouth, Castle'], zoom: 15 },
-    falzarego1: { spotNames: ['Falzarego Pass, spot 1'], nearbySpotNames: ['Falzarego Pass, spot 2'], minSpots: 4, zoom: 15 },
-    sorapis: { spotNames: ['Hike, Sorapis Lake + UP'], zoom: 15 },
-    drenthe: { spotNames: ['Drenthe, Grote Rietplas Oost'], zoom: 15 },
-    hoegne: { spotNames: ['La Hoëgne Valley, Promenade de la Hoëgne'], zoom: 15 },
-    casablanca: { spotNames: ['Platja Casablanca'], zoom: 15 },
-    millau: { spotNames: ['Millau'], zoom: 15 },
+    dartmouth: { spotNames: ['Dartmouth, Harbour', 'Dartmouth, Castle'], zoom: 12 },
+    falzarego1: { spotNames: ['Falzarego Pass, spot 1'], nearbySpotNames: ['Viewpoint Sterzing / Vipiteno', 'Falzarego Pass, spot 2'], zoom: 12 },
+    sorapis: { spotNames: ['Hike, Sorapis Lake + UP'], zoom: 12 },
+    drenthe: { spotNames: ['Drenthe, Grote Rietplas Oost'], zoom: 12 },
+    hoegne: { spotNames: ['La Hoëgne Valley, Promenade de la Hoëgne'], zoom: 12 },
+    casablanca: { spotNames: ['Platja Casablanca'], zoom: 12 },
+    millau: { spotNames: ['Millau'], zoom: 12 },
     compilation: { spotNames: ['Drenthe, Grote Rietplas Oost', 'Elorriaga'], zoom: 9 },
-    'pt-swimspots': { spotNames: ['Zona de Lazer da Volta da Lomba'], zoom: 15 },
-    'sp-swimspots': { spotNames: ['Lake Embalse De Santa Teresa'], zoom: 15 },
-    switzerland: { spotNames: ['Jurapark Aargau'], zoom: 15 },
-    wales: { spotNames: ['Black Rock Sands', 'Snowdonia Viewpoint'], zoom: 13 }
+    'pt-swimspots': { spotNames: ['Zona de Lazer da Volta da Lomba'], zoom: 12 },
+    'sp-swimspots': { spotNames: ['Lake Embalse De Santa Teresa'], zoom: 12 },
+    switzerland: { spotNames: ['Jurapark Aargau'], zoom: 12 },
+    wales: { spotNames: ['Black Rock Sands', 'Snowdonia Viewpoint'], zoom: 12 }
   };
   // Spots already showcased per category/video (the entries above) are the
   // free examples: always visible/unlocked for every visitor, no link or

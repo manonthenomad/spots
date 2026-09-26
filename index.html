@@ -1342,11 +1342,40 @@
   .unlock-close:hover{ background:#fff; }
   .unlock-card h3{
     font-family:'Fraunces', serif; font-weight:600; font-size:17px; color:var(--sage-deep);
-    margin:6px 0 8px;
+    margin:6px auto 8px;
+    max-width:260px;
   }
   .unlock-card p{
-    font-family:'Inter'; font-size:12px; color:var(--ink); line-height:1.55; margin:0 0 14px;
+    font-family:'Inter'; font-size:12px; color:var(--ink); line-height:1.55; margin:0 auto 14px;
+    max-width:260px;
   }
+  .unlock-help-btn{
+    position:absolute; right:14px; bottom:14px; z-index:5;
+    width:26px; height:26px; border-radius:50%;
+    background:var(--sage-pale); color:var(--sage-deep);
+    border:none; font-family:'Inter'; font-weight:700; font-size:13px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 2px 6px rgba(58,54,48,0.18);
+  }
+  .unlock-help-btn:hover{ background:#DFEAD8; }
+  .unlock-help-link-btn{
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    width:fit-content; margin:8px auto 0;
+    font-family:'Inter', sans-serif; font-weight:700; font-size:12.5px; color:#fff;
+    text-decoration:none; padding:9px 16px; border-radius:24px; border:none;
+    box-shadow:0 4px 12px rgba(58,54,48,0.18); cursor:pointer;
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .unlock-help-link-btn:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(58,54,48,0.24); }
+  .unlock-help-link-btn.dm-btn{ background:linear-gradient(135deg, var(--clay), #a8452b); }
+  .unlock-help-link-btn.mail-btn{ background:linear-gradient(135deg, var(--sage), var(--sage-deep)); }
+  .use-code-link{
+    display:block; margin:16px auto 0; background:none; border:none;
+    font-family:'Inter'; font-size:11px; color:var(--ink-soft); text-decoration:underline;
+    cursor:pointer; padding:0;
+  }
+  .use-code-link:hover{ color:var(--sage-deep); }
+  .unlock-code-section{ margin-top:12px; }
   .unlock-pay-btn{
     display:inline-flex; align-items:center; gap:6px;
     font-family:'Inter', sans-serif; font-weight:700; font-size:13px; color:#fff;
@@ -1524,13 +1553,25 @@
     <h3>🔓 Unlock all spots</h3>
     <p>Every hidden spot. Video, info, exact location. One-time €8,99 unlocks it all. It keeps me on the road finding new ones, and keeps the best-kept secrets just a little more secret.</p>
     <a id="unlockPayBtn" class="unlock-pay-btn" href="#" target="_blank" rel="noopener">Unlock all spots for €8,99</a>
-    <div class="unlock-divider">Have a code?</div>
-    <div class="unlock-code-row">
-      <input type="text" id="unlockCodeInput" class="unlock-code-input" placeholder="Enter your unlock code">
-      <button type="button" id="unlockCodeSubmit" class="unlock-code-submit">Unlock</button>
+    <button type="button" id="unlockHelpBtn" class="unlock-help-btn" aria-label="Help">?</button>
+  </div>
+</div>
+
+<div id="unlockHelpPanel" class="unlock-panel" hidden>
+  <div class="unlock-card">
+    <button type="button" id="unlockHelpCloseBtn" class="unlock-close" aria-label="Close">✕</button>
+    <h3>Have any questions or not functioning well?</h3>
+    <a class="unlock-help-link-btn dm-btn" href="https://ig.me/m/manonthenomad" target="_blank" rel="noopener">💬 Send me a DM</a>
+    <a class="unlock-help-link-btn mail-btn" href="mailto:manonstopmail@gmail.com">✉️ Send an e-mail</a>
+    <button type="button" id="useCodeLink" class="use-code-link">Use a code</button>
+    <div id="unlockCodeSection" class="unlock-code-section" hidden>
+      <div class="unlock-code-row">
+        <input type="text" id="unlockCodeInput" class="unlock-code-input" placeholder="Enter your unlock code">
+        <button type="button" id="unlockCodeSubmit" class="unlock-code-submit">Unlock</button>
+      </div>
+      <div id="unlockCodeError" class="unlock-code-error">Hmm, that code doesn't look right. Check for typos or DM @manonthenomad.</div>
+      <div id="unlockSuccessMsg" class="unlock-success-msg">🎉 Unlocked! Reloading the map…</div>
     </div>
-    <div id="unlockCodeError" class="unlock-code-error">Hmm, that code doesn't look right. Check for typos or DM @manonthenomad.</div>
-    <div id="unlockSuccessMsg" class="unlock-success-msg">🎉 Unlocked! Reloading the map…</div>
   </div>
 </div>
 
@@ -2212,6 +2253,16 @@
   document.getElementById('unlockCloseBtn').onclick = () => { unlockPanel.hidden = true; };
   unlockPanel.addEventListener('click', (e) => { if (e.target === unlockPanel) unlockPanel.hidden = true; });
   window.openUnlockPanel = () => { unlockPanel.hidden = false; };
+
+  // ---- "?" help popup on the unlock card: questions, DM, e-mail, and the
+  // (now tucked-away) "use a code" option ----
+  const unlockHelpPanel = document.getElementById('unlockHelpPanel');
+  document.getElementById('unlockHelpBtn').onclick = () => { unlockHelpPanel.hidden = false; };
+  document.getElementById('unlockHelpCloseBtn').onclick = () => { unlockHelpPanel.hidden = true; };
+  unlockHelpPanel.addEventListener('click', (e) => { if (e.target === unlockHelpPanel) unlockHelpPanel.hidden = true; });
+  document.getElementById('useCodeLink').onclick = () => {
+    document.getElementById('unlockCodeSection').hidden = false;
+  };
 
   document.getElementById('unlockCodeSubmit').onclick = () => {
     const val = document.getElementById('unlockCodeInput').value.trim();

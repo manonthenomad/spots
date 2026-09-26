@@ -2150,7 +2150,7 @@
   // spots get auto-picked so at least 3 are always shown.
   const UNLOCK_DEEP_LINKS = {
     dartmouth: { spotNames: ['Dartmouth, Harbour', 'Dartmouth, Castle'], zoom: 15 },
-    falzarego1: { spotNames: ['Falzarego Pass, spot 1'], zoom: 15 },
+    falzarego1: { spotNames: ['Falzarego Pass, spot 1'], nearbySpotNames: ['Falzarego Pass, spot 2'], minSpots: 4, zoom: 15 },
     sorapis: { spotNames: ['Hike, Sorapis Lake + UP'], zoom: 15 },
     drenthe: { spotNames: ['Drenthe, Grote Rietplas Oost'], zoom: 15 },
     hoegne: { spotNames: ['La Hoëgne Valley, Promenade de la Hoëgne'], zoom: 15 },
@@ -2959,6 +2959,7 @@
   }
 
   let highlightActive = false;
+  let highlightZoom = null;
   let routeLine = null;
   function highlightSpots(spotList, opts){
     opts = opts || {};
@@ -3011,6 +3012,7 @@
         map.setView(OVERVIEW_CENTER, OVERVIEW_ZOOM, { animate: false });
         map.flyToBounds(bounds, { padding: [50, 50], maxZoom: 12, duration: 1.1, easeLinearity: 0.25 });
         map.once('moveend', () => {
+          highlightZoom = map.getZoom();
           revealMap();
           if (onSettled) setTimeout(onSettled, 160);
         });
@@ -3018,13 +3020,28 @@
         // Spread across the continent — just show the whole-Europe
         // overview instead, no zoom animation needed.
         map.setView(OVERVIEW_CENTER, OVERVIEW_ZOOM, { animate: false });
+        highlightZoom = map.getZoom();
         revealMap();
         if (onSettled) setTimeout(onSettled, 160);
       }
-    } else if (onSettled){
-      onSettled();
+    } else {
+      // moveMap:false — the map is already framed by the caller (e.g. the
+      // route panel or the ?unlock= deep link), so the current zoom is
+      // already the "settled" reference level.
+      highlightZoom = map.getZoom();
+      if (onSettled) onSettled();
     }
   }
+  // If the visitor zooms back out past the level the highlight was framed
+  // at, the dimmed spots should pop back to full visibility again — locked
+  // ones included — rather than staying faded forever. Without this,
+  // zooming out after a highlight (e.g. a ?unlock= deep link) leaves every
+  // other spot barely visible.
+  map.on('zoomend', function(){
+    if (highlightActive && highlightZoom !== null && map.getZoom() < highlightZoom){
+      clearHighlight();
+    }
+  });
 
   // --- Deep-link "tease" spots: for a ?unlock=<key> link, always frame at
   // least 3 spots (the real unlocked one(s) + the nearest still-locked
@@ -3059,8 +3076,9 @@
       const s = spots.find(sp => sp.name === n);
       if (s && !seen.has(s.name)){ display.push(s); seen.add(s.name); }
     });
-    if (display.length < DEEP_LINK_MIN_SPOTS){
-      nearestOtherSpots(primarySpots, seen, DEEP_LINK_MIN_SPOTS - display.length)
+    const minSpots = config.minSpots || DEEP_LINK_MIN_SPOTS;
+    if (display.length < minSpots){
+      nearestOtherSpots(primarySpots, seen, minSpots - display.length)
         .forEach(s => { display.push(s); seen.add(s.name); });
     }
     return display;
@@ -3078,6 +3096,7 @@
     });
     if (routeLine){ map.removeLayer(routeLine); routeLine = null; }
     highlightActive = false;
+    highlightZoom = null;
     document.getElementById('highlightBar').hidden = true;
   }
   document.getElementById('clearHighlightBtn').onclick = clearHighlight;

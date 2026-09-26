@@ -3506,6 +3506,10 @@
         map.once('moveend', () => {
           revealMap();
           highlightSpots(displaySpots, { moveMap: false });
+          // Open the video popup for the actual unlocked spot (not just
+          // frame it) — this is what the visitor followed the link for.
+          const primaryRef = markerRefs.find(r => r.spot === primarySpots[0]);
+          if (primaryRef) setTimeout(() => primaryRef.marker.openPopup(), 300);
           setTimeout(showUnlockedBanner, 300);
         });
       });

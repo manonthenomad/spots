@@ -508,7 +508,7 @@
   .card .ig-embed-wrap .ig-fallback-link[hidden]{ display:none; }
   .card.stacked{ flex-direction:row; }
   .card.stacked .media{ flex:0 0 40%; width:auto; }
-  .card.stacked .content{ max-height:74vh; overflow-y:auto; }
+  .card.stacked .content{ max-height:50vh; overflow-y:auto; }
   .card .mute-toggle{
     position:absolute;
     bottom:8px;
@@ -579,7 +579,18 @@
     display:flex;
     flex-direction:column;
     overflow-y:auto;
-    max-height:74vh;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    max-height:50vh;
+    padding-right:4px;
+    scrollbar-width:thin;
+    scrollbar-color:var(--sage) transparent;
+  }
+  .card .content::-webkit-scrollbar{ width:4px; }
+  .card .content::-webkit-scrollbar-thumb{ background:var(--sage); border-radius:4px; }
+  .card .content.has-more{
+    -webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 26px), transparent);
+    mask-image:linear-gradient(to bottom, #000 calc(100% - 26px), transparent);
   }
   .card .tagsrow{
     font-size:13px;
@@ -613,7 +624,7 @@
   .card button.share-btn:hover{background:#f3efe6;}
 
   .card.no-media .content{
-    max-height:60vh;
+    max-height:50vh;
   }
   .card.no-media h3{font-size:17px;}
   .card.no-media p{font-size:13px; line-height:1.55;}
@@ -2155,7 +2166,7 @@
       name: "Near Mostar, at River",
       flag: "🇧🇦", tags: ["🏊","🌿","🚰","🔥","🏙️"],
       lat: 43.2435321, lng: 17.8478747,
-      info: "Romantic old town! Famous Stari Most bridge. Cute restaurants and locally made wine + Visit Blagaj. Both Mostar & Blagaj are a short drive away from campspot: Saturday from 3pm & Sunday is free parking in Mostar. Best to park near Franciscan Church<br><br>🚐 Amazing FREE campspot at the river to swim in, with water tap, BBQ grills, picnic houses, trashbins (see 2nd video) Note: trash around, but also trashbins, so I just picked up trash myself<br><br>🍷 Mostar, terras with view on bridge : Mimar<br>🍽️ Mostar, cute restaurant : Sadrvan<br>🍽️ Near campspot restaurant : Konoba Cuprija",
+      info: "👉 Use the arrows under the video to watch the 2nd video: more about the campspot, the restaurant there and Blagaj!<br><br>Romantic old town with the famous Stari Most bridge, cute restaurants and locally made wine. Be aware that Mostar itself can get quite touristy and busy. Don't skip Blagaj either! Both Mostar and Blagaj are a short drive from the campspot. Parking in Mostar is free on Saturday from 3 PM and on Sunday. Best to park near the Franciscan Church.<br><br>🌉 The Stari Most was built in 1566, destroyed in the war in 1993 and rebuilt in 2004. In summer local divers still jump off it, about 20 meters down into the Neretva river!<br>🍷 Try Žilavka, the typical white wine of this region.<br>🕌 In Blagaj, a centuries-old dervish house sits right where the Buna river springs out of a cliff.<br><br>🚐 An amazing FREE campspot right at the river, perfect for a swim. It's a well-known spot that campers love, and in nice weather many locals come together here for a family BBQ. It has a water tap, BBQ grills, picnic houses and trashbins. Note: there is some trash around, but there are bins too, so I just picked some up myself.<br><br>🍷 Terrace with a view of the bridge: Mimar<br>🍽️ Cute restaurant in Mostar: Sadrvan<br>🍽️ Restaurant near the campspot: Konoba Cuprija<br><br>💶 Tip: bring cash, you often need it to pay in the restaurants. Luckily there is an ATM on the spot.<br><br><strong>The free campspot:</strong>",
       mapsUrl: "https://maps.app.goo.gl/oWp5QCmyrx4KnG6M8",
       primary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/f_auto,q_auto/v1791730422/VID_20261011_064424_253_bsl_blqfyz.mp4" },
       secondary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/f_auto,q_auto/v1791732757/VID_20261011_070020_541_bsl_mu58va.mp4" }
@@ -2218,9 +2229,9 @@
   // free examples: always visible/unlocked for every visitor, no link or
   // code needed. Built straight from UNLOCK_DEEP_LINKS so a spot only needs
   // to be listed once.
-  const FREE_PREVIEW_SPOT_NAMES = new Set(
-    Object.values(UNLOCK_DEEP_LINKS).flatMap(cfg => cfg.spotNames)
-  );
+  // Kept empty on purpose: every spot is locked, except the spot(s) of the
+  // ?unlock=<key> link someone opened (or everything after payment / code).
+  const FREE_PREVIEW_SPOT_NAMES = new Set();
   const UNLOCKED_SPOTS_KEY = "spotsUnlockedList";
   const unlockedSpotSet = (function(){
     let list = [];
@@ -2693,6 +2704,16 @@
     const spot = e.popup._sourceSpot;
     if (spot && spot.name) gcEvent('/event/spot-view/' + encodeURIComponent(spot.name));
     centerOpenPopupEl(el);
+    const textBox = el.querySelector('.card .content');
+    if (textBox){
+      const updateMore = () => {
+        const more = textBox.scrollHeight - textBox.clientHeight - textBox.scrollTop > 6;
+        textBox.classList.toggle('has-more', more);
+      };
+      textBox.addEventListener('scroll', updateMore, { passive: true });
+      setTimeout(updateMore, 50);
+      setTimeout(updateMore, 400);
+    }
     const slot = el.querySelector('.media-slot');
     if (!slot) { processEmbeds(); return; }
     if (slot.querySelector('.spot-video') && !isLocked(spot)) activateVideo(slot);
@@ -3445,10 +3466,6 @@
     const banner = document.createElement('div');
     banner.className = 'unlock-banner';
     banner.innerHTML = `
-      <span class="unlock-star unlock-star-1">✨</span>
-      <span class="unlock-star unlock-star-2">✨</span>
-      <span class="unlock-star unlock-star-3">✨</span>
-      <span class="unlock-star unlock-star-4">✨</span>
       <span class="unlock-text">★ New Unlocked ★</span>`;
     document.body.appendChild(banner);
     requestAnimationFrame(() => requestAnimationFrame(() => banner.classList.add('unlock-show')));
@@ -3471,17 +3488,17 @@
       map.stop();
       map.closePopup();
       map.setView(OVERVIEW_CENTER, OVERVIEW_ZOOM, { animate: false });
-      // Step 1: fly from the Europe overview to the destination country.
-      map.flyTo([spotList[0].lat, spotList[0].lng], COUNTRY_ZOOM, { duration: 1.1, easeLinearity: 0.25 });
+      // Fly from the Europe overview to country level and stay there, so
+      // neighbouring spots always remain in view. No further zoom-in and
+      // no highlighting of the unlocked spots.
+      const center = [
+        spotList.reduce((sum, s) => sum + s.lat, 0) / spotList.length,
+        spotList.reduce((sum, s) => sum + s.lng, 0) / spotList.length
+      ];
+      map.flyTo(center, COUNTRY_ZOOM, { duration: 1.1, easeLinearity: 0.25 });
       map.once('moveend', () => {
-        // Step 2: zoom in further so the specific spots are clearly framed.
-        const bounds = L.latLngBounds(spotList.map(s => [s.lat, s.lng]));
-        map.flyToBounds(bounds, { padding: [70, 70], maxZoom: config.zoom || 14, duration: 1.3, easeLinearity: 0.25 });
-        map.once('moveend', () => {
-          revealMap();
-          highlightSpots(spotList, { moveMap: false });
-          setTimeout(showUnlockedBanner, 300);
-        });
+        revealMap();
+        setTimeout(showUnlockedBanner, 300);
       });
     }, 5400);
   })();

@@ -461,6 +461,7 @@
     margin:0 auto;
   }
   .card .no-video span{font-size:10px; color:var(--ink-soft);}
+  .card .no-video.coming-soon-video span{font-size:12px; font-weight:600; color:#D9701E;}
   .card .ig-embed-wrap{
     width:227px;
     height:40vh;
@@ -779,8 +780,7 @@
   .unlock-banner{
     position:fixed; left:50%; top:50%; transform:translate(-50%,-50%) scale(0.7);
     z-index:9999; pointer-events:none;
-    display:flex; align-items:center; justify-content:center; gap:10px;
-    box-sizing:border-box; max-width:92vw;
+    display:flex; align-items:center; gap:10px;
     background:linear-gradient(135deg, var(--clay), var(--sage-deep));
     color:#fff; font-family:'Fraunces', serif; font-weight:600; font-size:19px;
     letter-spacing:0.5px; padding:14px 26px; border-radius:999px;
@@ -789,12 +789,7 @@
   }
   .unlock-banner.unlock-show{ opacity:1; transform:translate(-50%,-50%) scale(1); }
   .unlock-banner.unlock-hide{ opacity:0; transform:translate(-50%,-50%) scale(0.85); }
-  /* nowrap so the two flanking stars never break onto their own line on
-     narrow screens; the media query below shrinks the text instead. */
-  .unlock-text{ position:relative; z-index:1; white-space:nowrap; }
-  @media (max-width:420px){
-    .unlock-banner{ font-size:15px; padding:11px 18px; gap:7px; }
-  }
+  .unlock-text{ position:relative; z-index:1; }
   .unlock-star{
     position:absolute; font-size:15px; opacity:0; animation:unlock-twinkle 1.6s ease-in-out infinite;
   }
@@ -2103,6 +2098,67 @@
       mapsUrl: "https://maps.app.goo.gl/HM2chnbCGWdAxzBD8",
       primary: null,
       secondary: null
+    },
+    {
+      name: "Tiny Harbour",
+      flag: "🇮🇹", tags: ["🌊","🏊","🌿"],
+      // TODO: approximate position near Lazzaretto (Muggia). Replace with the exact coordinates.
+      lat: 45.593, lng: 13.738,
+      info: "Coming soon",
+      mapsUrl: "https://maps.app.goo.gl/zNZbqqU1SA1oimHi9",
+      comingSoon: true,
+      primary: null,
+      secondary: null
+    },
+    {
+      name: "Coast in Town",
+      flag: "🇭🇷", tags: ["🏊","🌿","🏙️"],
+      // TODO: PLACEHOLDER position (the Google Maps link could not be resolved). Replace with the exact coordinates.
+      lat: 43.508, lng: 16.440,
+      info: "Coming soon",
+      mapsUrl: "https://goo.gl/maps/KZUuaKX9fvZb5WHT9?g_st=ac",
+      comingSoon: true,
+      primary: null,
+      secondary: null
+    },
+    {
+      name: "Campings River",
+      flag: "🇧🇦", tags: ["🏊","🌿","🚻","🚰","🚿"],
+      lat: 44.64456, lng: 16.03649,
+      info: "Coming soon",
+      mapsUrl: "https://maps.app.goo.gl/hwh3aBW6PDLF7K8g7?g_st=ac",
+      comingSoon: true,
+      primary: null,
+      secondary: null
+    },
+    {
+      name: "Lake Misici",
+      flag: "🇧🇦", tags: ["🏊","🌿","🏔️","🔥"],
+      lat: 43.7328879, lng: 17.0185103,
+      info: "This small lake is incredible. Beautiful completely surrounded with nature, mountain views and crazy stars in the night. Go down to go for a swim. Or have a run around the lake, you could pass a snake on the way. There is a little campfire circle with rocks, not sure if it’s officially allowed. Note: you -must- drive the right route. Take the M6.1, drive to a little bit North of the lake, there you will find a route that goes down. The route from East is way too difficult. Could be trashy.",
+      mapsUrl: "https://maps.app.goo.gl/JkJyV8JRv3WkNpFR8?g_st=ac",
+      comingSoon: true,
+      primary: null,
+      secondary: null
+    },
+    {
+      name: "Lake Bilećko jezero",
+      flag: "🇧🇦", tags: ["🏔️"],
+      lat: 42.841541, lng: 18.4293649,
+      info: "Interesting lake, the rock formations make you feel like you're on another planet. Very private. Note: only for small campers, otherwise too difficult to turn around at the dead end. Reaching the water is a climb, but mostly, extremely muddy. I did one step and my feet sank very deep in the mud.",
+      mapsUrl: "https://maps.app.goo.gl/f9eyWETqMq66msKCA?g_st=ac",
+      comingSoon: true,
+      primary: null,
+      secondary: null
+    },
+    {
+      name: "Near Mostar, at River",
+      flag: "🇧🇦", tags: ["🏊","🌿","🚰","🔥","🏙️"],
+      lat: 43.2435321, lng: 17.8478747,
+      info: "Romantic old town! Famous Stari Most bridge. Cute restaurants and locally made wine + Visit Blagaj. Both Mostar & Blagaj are a short drive away from campspot: Saturday from 3pm & Sunday is free parking in Mostar. Best to park near Franciscan Church<br><br>🚐 Amazing FREE campspot at the river to swim in, with water tap, BBQ grills, picnic houses, trashbins (see 2nd video) Note: trash around, but also trashbins, so I just picked up trash myself<br><br>🍷 Mostar, terras with view on bridge : Mimar<br>🍽️ Mostar, cute restaurant : Sadrvan<br>🍽️ Near campspot restaurant : Konoba Cuprija",
+      mapsUrl: "https://maps.app.goo.gl/oWp5QCmyrx4KnG6M8",
+      primary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/f_auto,q_auto/v1791730422/VID_20261011_064424_253_bsl_blqfyz.mp4" },
+      secondary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/f_auto,q_auto/v1791732757/VID_20261011_070020_541_bsl_mu58va.mp4" }
     }
   ];
   document.getElementById('spot-count').textContent = spots.length;
@@ -2141,30 +2197,22 @@
   //       remembered in this browser, so a visitor who follows several
   //       Instagram links gradually collects them.
   // Add a new key here for every spot you post on Instagram; spotNames must
-  // match the spots' `name` fields exactly. `zoom` is a safety cap only —
-  // never zoom in closer than this. The actual zoom comes from fitting all
-  // framed spots in view (see getDeepLinkDisplaySpots below), so a low cap
-  // here (e.g. 12) is what keeps the view zoomed out enough that several
-  // other (locked) spots stay visible around the unlocked one — that's the
-  // whole point: visitors see there's more to explore and want to unlock it.
-  // Optional `nearbySpotNames`: name(s) of other (still-locked) spots to
-  // frame + highlight alongside this one, e.g. to match spots shown
-  // together in a specific video. Leave it out and the nearest locked
-  // spots get auto-picked so at least 3 are always shown. Optional
-  // `minSpots` overrides the default minimum of 3 for this link only.
+  // match the spots' `name` fields exactly. `zoom` is how far the map zooms
+  // in on the spot(s) when the link is opened.
   const UNLOCK_DEEP_LINKS = {
-    dartmouth: { spotNames: ['Dartmouth, Harbour', 'Dartmouth, Castle'], zoom: 12 },
-    falzarego1: { spotNames: ['Falzarego Pass, spot 1'], nearbySpotNames: ['Viewpoint Sterzing / Vipiteno', 'Falzarego Pass, spot 2'], zoom: 12 },
-    sorapis: { spotNames: ['Hike, Sorapis Lake + UP'], zoom: 12 },
-    drenthe: { spotNames: ['Drenthe, Grote Rietplas Oost'], zoom: 12 },
-    hoegne: { spotNames: ['La Hoëgne Valley, Promenade de la Hoëgne'], zoom: 12 },
-    casablanca: { spotNames: ['Platja Casablanca'], zoom: 12 },
-    millau: { spotNames: ['Millau'], zoom: 12 },
+    dartmouth: { spotNames: ['Dartmouth, Harbour', 'Dartmouth, Castle'], zoom: 15 },
+    falzarego1: { spotNames: ['Falzarego Pass, spot 1'], zoom: 15 },
+    sorapis: { spotNames: ['Hike, Sorapis Lake + UP'], zoom: 15 },
+    drenthe: { spotNames: ['Drenthe, Grote Rietplas Oost'], zoom: 15 },
+    hoegne: { spotNames: ['La Hoëgne Valley, Promenade de la Hoëgne'], zoom: 15 },
+    casablanca: { spotNames: ['Platja Casablanca'], zoom: 15 },
+    millau: { spotNames: ['Millau'], zoom: 15 },
     compilation: { spotNames: ['Drenthe, Grote Rietplas Oost', 'Elorriaga'], zoom: 9 },
-    'pt-swimspots': { spotNames: ['Zona de Lazer da Volta da Lomba'], zoom: 12 },
-    'sp-swimspots': { spotNames: ['Lake Embalse De Santa Teresa'], zoom: 12 },
-    switzerland: { spotNames: ['Jurapark Aargau'], zoom: 12 },
-    wales: { spotNames: ['Black Rock Sands', 'Snowdonia Viewpoint'], zoom: 12 }
+    'pt-swimspots': { spotNames: ['Zona de Lazer da Volta da Lomba'], zoom: 15 },
+    'sp-swimspots': { spotNames: ['Lake Embalse De Santa Teresa'], zoom: 15 },
+    switzerland: { spotNames: ['Jurapark Aargau'], zoom: 15 },
+    wales: { spotNames: ['Black Rock Sands', 'Snowdonia Viewpoint'], zoom: 13 },
+    mostar: { spotNames: ['Near Mostar, at River'], zoom: 15 }
   };
   // Spots already showcased per category/video (the entries above) are the
   // free examples: always visible/unlocked for every visitor, no link or
@@ -2508,7 +2556,9 @@
     // also blocks tapping it; playback is skipped, see popupopen/showMedia).
     // The overlay sits next to .media-slot, not inside it, because switching
     // between videos rewrites the slot's contents.
-    const mediaCol = spot.primary
+    const mediaCol = !spot.primary && spot.comingSoon
+      ? `<div class="media"><div class="no-video coming-soon-video"><span>🎬 Coming soon</span></div></div>`
+      : spot.primary
       ? `<div class="media">
            ${isLocked(spot)
              ? `<div class="media-lock-wrap">${slotHtml}<div class="media-lock-overlay" role="img" aria-label="Locked video">🔒</div></div>`
@@ -2526,7 +2576,7 @@
          ${spot.info ? `<p>${boldNote(spot.info)}</p>` : ""}
          <a class="maps-link" href="${spot.mapsUrl}" target="_blank" rel="noopener">📍 Open in Google Maps</a>`;
     return `
-      <div class="card${spot.primary ? "" : " no-media"}">
+      <div class="card${(spot.primary || spot.comingSoon) ? "" : " no-media"}">
         ${mediaCol}
         <div class="content">
           ${contentHtml}
@@ -2963,7 +3013,6 @@
   }
 
   let highlightActive = false;
-  let highlightZoom = null;
   let routeLine = null;
   function highlightSpots(spotList, opts){
     opts = opts || {};
@@ -2981,13 +3030,9 @@
         el.style.filter = 'drop-shadow(0 0 10px #C98B6E) drop-shadow(0 0 4px #C98B6E)';
         if (cEl) cEl.style.opacity = 1;
       } else {
-        // Kept clearly visible (not just a faint hint) so the highlighted
-        // spots read as "these 3 are from this video" rather than "these
-        // are the only spots that exist" — the other, non-highlighted
-        // spots (locked included) should still tempt a visitor to look.
-        el.style.opacity = 0.55;
+        el.style.opacity = 0.18;
         el.style.filter = 'none';
-        if (cEl) cEl.style.opacity = 0.45;
+        if (cEl) cEl.style.opacity = 0.15;
       }
     });
     if (routeLine){ map.removeLayer(routeLine); routeLine = null; }
@@ -3002,7 +3047,7 @@
     }
     highlightActive = true;
     document.getElementById('highlightLabel').textContent =
-      `🎬📍 ${spotList.length} spot${spotList.length > 1 ? 's' : ''} from video`;
+      `🎬📍 ${spotList.length} spot${spotList.length > 1 ? 's' : ''} highlighted`;
     document.getElementById('highlightBar').hidden = false;
     if (moveMap && spotList.length){
       map.stop();
@@ -3020,7 +3065,6 @@
         map.setView(OVERVIEW_CENTER, OVERVIEW_ZOOM, { animate: false });
         map.flyToBounds(bounds, { padding: [50, 50], maxZoom: 12, duration: 1.1, easeLinearity: 0.25 });
         map.once('moveend', () => {
-          highlightZoom = map.getZoom();
           revealMap();
           if (onSettled) setTimeout(onSettled, 160);
         });
@@ -3028,68 +3072,12 @@
         // Spread across the continent — just show the whole-Europe
         // overview instead, no zoom animation needed.
         map.setView(OVERVIEW_CENTER, OVERVIEW_ZOOM, { animate: false });
-        highlightZoom = map.getZoom();
         revealMap();
         if (onSettled) setTimeout(onSettled, 160);
       }
-    } else {
-      // moveMap:false — the map is already framed by the caller (e.g. the
-      // route panel or the ?unlock= deep link), so the current zoom is
-      // already the "settled" reference level.
-      highlightZoom = map.getZoom();
-      if (onSettled) onSettled();
+    } else if (onSettled){
+      onSettled();
     }
-  }
-  // If the visitor zooms back out past the level the highlight was framed
-  // at, the dimmed spots should pop back to full visibility again — locked
-  // ones included — rather than staying faded forever. Without this,
-  // zooming out after a highlight (e.g. a ?unlock= deep link) leaves every
-  // other spot barely visible.
-  map.on('zoomend', function(){
-    if (highlightActive && highlightZoom !== null && map.getZoom() < highlightZoom){
-      clearHighlight();
-    }
-  });
-
-  // --- Deep-link "tease" spots: for a ?unlock=<key> link, always frame at
-  // least 3 spots (the real unlocked one(s) + the nearest still-locked
-  // ones), so the visitor sees padlocked spots right next to the one they
-  // just unlocked, instead of the map zooming in tight on a single pin.
-  // Purely visual — only config.spotNames itself gets added to
-  // unlockedSpotSet, the auto-picked neighbours stay locked/fogged.
-  const DEEP_LINK_MIN_SPOTS = 3;
-  const DEEP_LINK_NEARBY_MAX_KM = 200;
-  function nearestOtherSpots(baseSpots, excludeNames, count){
-    if (count <= 0) return [];
-    const lat = baseSpots.reduce((sum, s) => sum + s.lat, 0) / baseSpots.length;
-    const lng = baseSpots.reduce((sum, s) => sum + s.lng, 0) / baseSpots.length;
-    const center = L.latLng(lat, lng);
-    return spots
-      .filter(s => !excludeNames.has(s.name))
-      .map(s => ({ spot: s, dist: map.distance(center, L.latLng(s.lat, s.lng)) }))
-      .filter(x => x.dist <= DEEP_LINK_NEARBY_MAX_KM * 1000)
-      .sort((a, b) => a.dist - b.dist)
-      .slice(0, count)
-      .map(x => x.spot);
-  }
-  // Builds the full list of spots to frame + highlight for a deep link:
-  // the real spot(s) it unlocks, plus a manual `nearbySpotNames` list on
-  // the config if Manon wants to curate exactly which locked spots show
-  // (e.g. to match a specific video), else the nearest locked spots
-  // auto-picked to reach DEEP_LINK_MIN_SPOTS.
-  function getDeepLinkDisplaySpots(config, primarySpots){
-    const display = primarySpots.slice();
-    const seen = new Set(display.map(s => s.name));
-    (config.nearbySpotNames || []).forEach(n => {
-      const s = spots.find(sp => sp.name === n);
-      if (s && !seen.has(s.name)){ display.push(s); seen.add(s.name); }
-    });
-    const minSpots = config.minSpots || DEEP_LINK_MIN_SPOTS;
-    if (display.length < minSpots){
-      nearestOtherSpots(primarySpots, seen, minSpots - display.length)
-        .forEach(s => { display.push(s); seen.add(s.name); });
-    }
-    return display;
   }
 
   function clearHighlight(){
@@ -3104,7 +3092,6 @@
     });
     if (routeLine){ map.removeLayer(routeLine); routeLine = null; }
     highlightActive = false;
-    highlightZoom = null;
     document.getElementById('highlightBar').hidden = true;
   }
   document.getElementById('clearHighlightBtn').onclick = clearHighlight;
@@ -3453,10 +3440,6 @@
   // this specific link is what revealed the spots.
   // The keys themselves live in UNLOCK_DEEP_LINKS (paywall section above),
   // where opening this link also unlocks those spots.
-  // The frame always includes at least 3 spots (real unlocked + nearest
-  // locked neighbours, see getDeepLinkDisplaySpots) so the still-locked
-  // spots are visible right next to the unlocked one, padlock and all —
-  // the map never zooms in tight on just the single unlocked pin.
   // =========================================================
   function showUnlockedBanner(){
     const banner = document.createElement('div');
@@ -3480,36 +3463,23 @@
     if (!unlockKey) return;
     if (!Object.prototype.hasOwnProperty.call(UNLOCK_DEEP_LINKS, unlockKey)) return;
     const config = UNLOCK_DEEP_LINKS[unlockKey];
-    const primarySpots = config.spotNames.map(n => spots.find(s => s.name === n)).filter(Boolean);
-    if (!primarySpots.length) return;
-    // The real unlocked spot(s) plus enough nearby (still-locked) spots to
-    // always frame at least 3 — see getDeepLinkDisplaySpots above.
-    const displaySpots = getDeepLinkDisplaySpots(config, primarySpots);
+    const spotList = config.spotNames.map(n => spots.find(s => s.name === n)).filter(Boolean);
+    if (!spotList.length) return;
     // Same beat as the ?video= deep link: 2200ms splash hold + 1.6s intro
     // flyTo + the staggered pin drop-ins landing shortly after.
     setTimeout(() => {
       map.stop();
       map.closePopup();
       map.setView(OVERVIEW_CENTER, OVERVIEW_ZOOM, { animate: false });
-      // Step 1: fly from the Europe overview to the destination country,
-      // anchored on the actual unlocked spot.
-      map.flyTo([primarySpots[0].lat, primarySpots[0].lng], COUNTRY_ZOOM, { duration: 1.1, easeLinearity: 0.25 });
+      // Step 1: fly from the Europe overview to the destination country.
+      map.flyTo([spotList[0].lat, spotList[0].lng], COUNTRY_ZOOM, { duration: 1.1, easeLinearity: 0.25 });
       map.once('moveend', () => {
-        // Step 2: zoom in further so all display spots (unlocked + the
-        // locked neighbours) are clearly framed — locked ones use their
-        // fuzzed position, same as the marker itself, so the fit never
-        // reveals a locked spot's real location. `config.zoom` is only a
-        // safety cap now (don't zoom in closer than this), the actual
-        // zoom level comes from fitting all of `bounds`.
-        const bounds = L.latLngBounds(displaySpots.map(s => isLocked(s) ? fuzzedCoords(s) : [s.lat, s.lng]));
-        map.flyToBounds(bounds, { padding: [70, 70], maxZoom: config.zoom || 13, duration: 1.3, easeLinearity: 0.25 });
+        // Step 2: zoom in further so the specific spots are clearly framed.
+        const bounds = L.latLngBounds(spotList.map(s => [s.lat, s.lng]));
+        map.flyToBounds(bounds, { padding: [70, 70], maxZoom: config.zoom || 14, duration: 1.3, easeLinearity: 0.25 });
         map.once('moveend', () => {
           revealMap();
-          highlightSpots(displaySpots, { moveMap: false });
-          // Open the video popup for the actual unlocked spot (not just
-          // frame it) — this is what the visitor followed the link for.
-          const primaryRef = markerRefs.find(r => r.spot === primarySpots[0]);
-          if (primaryRef) setTimeout(() => primaryRef.marker.openPopup(), 300);
+          highlightSpots(spotList, { moveMap: false });
           setTimeout(showUnlockedBanner, 300);
         });
       });

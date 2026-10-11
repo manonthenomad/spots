@@ -796,6 +796,7 @@
     color:#fff; font-family:'Fraunces', serif; font-weight:600; font-size:19px;
     letter-spacing:0.5px; padding:14px 26px; border-radius:999px;
     box-shadow:0 14px 34px rgba(58,54,48,0.35), 0 0 0 1px rgba(255,255,255,0.25) inset;
+    white-space:nowrap; max-width:90vw;
     opacity:0; transition:opacity .45s ease, transform .45s cubic-bezier(.2,1.4,.4,1);
   }
   .unlock-banner.unlock-show{ opacity:1; transform:translate(-50%,-50%) scale(1); }
@@ -3431,6 +3432,53 @@
   // Add a new slug here any time a new shareable link is needed; the value
   // just needs to be a snippet unique to that video's URL.
   // =========================================================
+  // =========================================================
+  // ---- Shared flow for every deep link (?unlock= and ?video=) ----
+  // 1. loading screen  2. pins drop in  3. fly to the area of the spot,
+  // stopping at the highest zoom where at least 5 spots (including the
+  // linked one) are in view  4. open the spot of the link. No highlighting.
+  // =========================================================
+  const DEEP_LINK_DELAY = PIN_DROP_BASE_DELAY + spots.length * PIN_DROP_STAGGER + 700;
+  const DEEP_LINK_MIN_SPOTS_IN_VIEW = 5;
+  function flyToLinkArea(spotList, onArrived){
+    map.stop();
+    map.closePopup();
+    map.setView(OVERVIEW_CENTER, OVERVIEW_ZOOM, { animate: false });
+    const center = L.latLng(
+      spotList.reduce((sum, s) => sum + s.lat, 0) / spotList.length,
+      spotList.reduce((sum, s) => sum + s.lng, 0) / spotList.length
+    );
+    const allPins = markerRefs.map(r => r.marker.getLatLng());
+    function spotsInViewAt(z){
+      const size = map.getSize();
+      const pt = map.project(center, z);
+      // 8% margin so pins right on the edge don't count as "in view"
+      const halfW = size.x * 0.42, halfH = size.y * 0.42;
+      const sw = map.unproject(pt.add([-halfW, halfH]), z);
+      const ne = map.unproject(pt.add([halfW, -halfH]), z);
+      const b = L.latLngBounds(sw, ne);
+      return allPins.filter(ll => b.contains(ll)).length;
+    }
+    let zoomTarget = OVERVIEW_ZOOM;
+    for (let z = 10; z >= OVERVIEW_ZOOM; z--){
+      if (spotsInViewAt(z) >= DEEP_LINK_MIN_SPOTS_IN_VIEW){ zoomTarget = z; break; }
+    }
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      revealMap();
+      onArrived();
+    };
+    map.once('moveend', finish);
+    setTimeout(finish, 1600);
+    map.flyTo(center, zoomTarget, { duration: 1.1, easeLinearity: 0.25 });
+  }
+  function openSpotPopup(spot){
+    const ref = markerRefs.find(r => r.spot === spot);
+    if (ref) setTimeout(() => ref.marker.openPopup(), 450);
+  }
+
   const VIDEO_DEEP_LINK_SLUGS = {
     'wales': 'u2ucf9',                       // England/Wales trip compilation
     'compilation': 'Campspots-Compilation-01',
@@ -3447,7 +3495,18 @@
     if (!group) return;
     // Same beat as the "i" info-button bounce below: 2200ms splash hold +
     // 1.6s intro flyTo + the staggered pin drop-ins landing shortly after.
-    setTimeout(() => { onVideoTileClick(group); }, 5400);
+    const groupSpots = group.entries.map(e => e.spot);
+    setTimeout(() => {
+      flyToLinkArea(groupSpots, () => {
+        if (groupSpots.length === 1){
+          openSpotPopup(groupSpots[0]);
+        } else {
+          // Several spots in this video: show its spot list (no highlighting).
+          openRoutePanel(group);
+          routePanel.hidden = false;
+        }
+      });
+    }, DEEP_LINK_DELAY);
   })();
 
   // =========================================================
@@ -3466,7 +3525,7 @@
     const banner = document.createElement('div');
     banner.className = 'unlock-banner';
     banner.innerHTML = `
-      <span class="unlock-text">★ New Unlocked ★</span>`;
+      <span class="unlock-text">New Unlocked</span>`;
     document.body.appendChild(banner);
     requestAnimationFrame(() => requestAnimationFrame(() => banner.classList.add('unlock-show')));
     setTimeout(() => {
@@ -3482,25 +3541,12 @@
     const config = UNLOCK_DEEP_LINKS[unlockKey];
     const spotList = config.spotNames.map(n => spots.find(s => s.name === n)).filter(Boolean);
     if (!spotList.length) return;
-    // Same beat as the ?video= deep link: 2200ms splash hold + 1.6s intro
-    // flyTo + the staggered pin drop-ins landing shortly after.
     setTimeout(() => {
-      map.stop();
-      map.closePopup();
-      map.setView(OVERVIEW_CENTER, OVERVIEW_ZOOM, { animate: false });
-      // Fly from the Europe overview to country level and stay there, so
-      // neighbouring spots always remain in view. No further zoom-in and
-      // no highlighting of the unlocked spots.
-      const center = [
-        spotList.reduce((sum, s) => sum + s.lat, 0) / spotList.length,
-        spotList.reduce((sum, s) => sum + s.lng, 0) / spotList.length
-      ];
-      map.flyTo(center, COUNTRY_ZOOM, { duration: 1.1, easeLinearity: 0.25 });
-      map.once('moveend', () => {
-        revealMap();
-        setTimeout(showUnlockedBanner, 300);
+      flyToLinkArea(spotList, () => {
+        showUnlockedBanner();
+        openSpotPopup(spotList[0]);
       });
-    }, 5400);
+    }, DEEP_LINK_DELAY);
   })();
 </script>
 

@@ -605,6 +605,20 @@
   }
   .card p{margin:0 0 8px; font-size:11px; line-height:1.45; color:var(--ink-soft);}
   .card p strong.note-label{display:inline-block; margin-top:6px;}
+  .card .info-rich details.acc{
+    border:1px solid #e3dccb; border-radius:10px; background:#fbf8f1; margin:0 0 6px;
+  }
+  .card .info-rich details.acc summary{
+    cursor:pointer; list-style:none; padding:7px 9px;
+    font-weight:600; font-size:11.5px; line-height:1.3; color:var(--sage-deep);
+    display:flex; justify-content:space-between; align-items:center; gap:8px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .card .info-rich details.acc summary::-webkit-details-marker{ display:none; }
+  .card .info-rich details.acc summary::after{ content:"+"; font-size:15px; line-height:1; flex:0 0 auto; }
+  .card .info-rich details.acc[open] summary::after{ content:"\2212"; }
+  .card .info-rich .acc-body{ padding:0 9px 3px; }
+  .card .info-rich p.acc-cta{ margin:2px 0 6px; }
   .card a.maps-link{
     display:inline-flex; align-items:center; gap:5px; font-family:'Inter';
     font-weight:600; font-size:11px; color:#fff;
@@ -2167,7 +2181,36 @@
       name: "Near Mostar, at River",
       flag: "🇧🇦", tags: ["🏊","🌿","🚰","🔥","🏙️"],
       lat: 43.2435321, lng: 17.8478747,
-      info: "👉 Use the arrows under the video to watch the 2nd video: more about the campspot, the restaurant there and Blagaj!<br><br>Romantic old town with the famous Stari Most bridge, cute restaurants and locally made wine. Be aware that Mostar itself can get quite touristy and busy. Don't skip Blagaj either! Both Mostar and Blagaj are a short drive from the campspot. Parking in Mostar is free on Saturday from 3 PM and on Sunday. Best to park near the Franciscan Church.<br><br>🌉 The Stari Most was built in 1566, destroyed in the war in 1993 and rebuilt in 2004. In summer local divers still jump off it, about 20 meters down into the Neretva river!<br>🍷 Try Žilavka, the typical white wine of this region.<br>🕌 In Blagaj, a centuries-old dervish house sits right where the Buna river springs out of a cliff.<br><br>🚐 An amazing FREE campspot right at the river, perfect for a swim. It's a well-known spot that campers love, and in nice weather many locals come together here for a family BBQ. It has a water tap, BBQ grills, picnic houses and trashbins. Note: there is some trash around, but there are bins too, so I just picked some up myself.<br><br>🍷 Terrace with a view of the bridge: Mimar<br>🍽️ Cute restaurant in Mostar: Sadrvan<br>🍽️ Restaurant near the campspot: Konoba Cuprija<br><br>💶 Tip: bring cash, you often need it to pay in the restaurants. Luckily there is an ATM on the spot.<br><br><strong>The free campspot:</strong>",
+      infoHtml: `
+        <p>👉 Use the arrows under the video to watch the 2nd video: more about the campspot, the restaurant there and Blagaj!</p>
+        <p>💶 Tip: bring cash! Many restaurants are cash only and paying by card is often not possible. There is an ATM in the Old Town of Mostar.</p>
+        <details class="acc">
+          <summary>1. The city of Mostar</summary>
+          <div class="acc-body">
+            <p>Mostar is a romantic old town with cobblestone streets and cute restaurants. Yes, it still carries scars from a violent history. But for the locals those scars are an extra drive to replace that dark past with peace, warmth and hospitality. They are so grateful for the peace today and genuinely eager to show visitors how beautiful and safe their country is. The crime rate is low, and a guest is seen as an honor: it's very normal to receive gifts like local fruit. Time to enjoy this stunning place ❤️🕊️</p>
+            <p>🌉 The famous Stari Most bridge was built in 1566, destroyed in the war in 1993 and rebuilt in 2004. In summer local divers still jump off it, about 20 meters down into the Neretva river!<br>🥂 Try Žilavka, the typical white wine of this region.</p>
+            <p><strong>Tips:</strong><br>🍷 Terrace restaurant with a view of the bridge: Mimar<br>🍽️ Very cute restaurant in the heart of the old town: Sadrvan</p>
+            <p>🅿️ Parking in Mostar is free on Saturday from 3 PM and on Sunday. Best to park near the Franciscan Church.</p>
+            <p>Be aware that Mostar itself can get quite touristy and busy. From Mostar it's a short drive to Blagaj and the free campspot 👇</p>
+          </div>
+        </details>
+        <details class="acc">
+          <summary>2. Nearby: the stunning Blagaj</summary>
+          <div class="acc-body">
+            <p>🕌 In Blagaj, a centuries-old dervish house sits right where the Buna river springs out of a cliff.<br>🍽️ There are many terraces and restaurants.</p>
+            <p>Be aware that it can get quite touristy and busy here too. From here it's a short drive to the free campspot 👇</p>
+          </div>
+        </details>
+        <details class="acc">
+          <summary>3. The free campspot, at the river with BBQ grills</summary>
+          <div class="acc-body">
+            <p>🚐 An amazing FREE campspot right at the river, perfect for a swim. It's a well-known spot that campers love, and in nice weather many locals come together here for a family BBQ. It has a water tap, BBQ grills, picnic houses and trashbins.</p>
+            <p><strong class="note-label">Note:</strong> there is some trash around, but there are bins too, so I just picked some up myself.</p>
+            <p>🍽️ Restaurant near the campspot: Konoba Cuprija</p>
+          </div>
+        </details>
+        <p class="acc-cta"><strong>📍 The free campspot:</strong></p>
+      `,
       mapsUrl: "https://maps.app.goo.gl/oWp5QCmyrx4KnG6M8",
       primary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/f_auto,q_auto/v1791730422/VID_20261011_064424_253_bsl_blqfyz.mp4" },
       secondary: { type: "cloudinary", url: "https://res.cloudinary.com/xngwwxyv/video/upload/f_auto,q_auto/v1791732757/VID_20261011_070020_541_bsl_mu58va.mp4" }
@@ -2585,7 +2628,7 @@
          <button type="button" class="unlock-cta-btn" onclick="openUnlockPanel()">🔓 Unlock all spots</button>`
       : `<div class="tagsrow">${spot.flag || ""} ${spot.tags.join(" ")}</div>
          <h3>${spot.name}</h3>
-         ${spot.info ? `<p>${boldNote(spot.info)}</p>` : ""}
+         ${spot.infoHtml ? `<div class="info-rich">${spot.infoHtml}</div>` : spot.info ? `<p>${boldNote(spot.info)}</p>` : ""}
          <a class="maps-link" href="${spot.mapsUrl}" target="_blank" rel="noopener">📍 Open in Google Maps</a>`;
     return `
       <div class="card${(spot.primary || spot.comingSoon) ? "" : " no-media"}">
@@ -2712,6 +2755,7 @@
         textBox.classList.toggle('has-more', more);
       };
       textBox.addEventListener('scroll', updateMore, { passive: true });
+      textBox.addEventListener('toggle', () => setTimeout(updateMore, 30), true);
       setTimeout(updateMore, 50);
       setTimeout(updateMore, 400);
     }
